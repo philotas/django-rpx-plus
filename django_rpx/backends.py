@@ -1,9 +1,9 @@
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-from rpx.models import RpxData
+from django_rpx.models import RpxData
 from django.conf import settings
-from rpx.views import permute_name
+from django_rpx.views import permute_name
 TRUSTED_PROVIDERS=set(getattr(settings,'RPX_TRUSTED_PROVIDERS', []))
 
 class RpxBackend:

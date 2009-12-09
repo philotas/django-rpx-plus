@@ -20,7 +20,7 @@ TODO:
 
 register = template.Library()
 
-@register.inclusion_tag('rpx_link.html', takes_context=True)
+@register.inclusion_tag('django_rpx/rpx_link.html', takes_context=True)
 def rpx_link(context, text):
     current_site=Site.objects.get_current()
     
@@ -28,7 +28,7 @@ def rpx_link(context, text):
       'text': text,
       'realm': settings.RPXNOW_REALM,
       'token_url': "http://%s%s" % (current_site.domain,
-        reverse('rpx.views.rpx_response'))
+        reverse('django_rpx.views.rpx_response'))
     }
     
 """
@@ -39,14 +39,14 @@ put this in "rpx_script.html" in your templates dir.
 </a>
 """
 
-@register.inclusion_tag('rpx_script.html')
+@register.inclusion_tag('django_rpx/rpx_script.html')
 def rpx_script():
     current_site=Site.objects.get_current()
     
     return {
       'realm': settings.RPXNOW_REALM,
       'token_url': "http://%s%s" %(current_site.domain,
-        reverse('rpx.views.rpx_response'))
+        reverse('django_rpx.views.rpx_response'))
     }
     
 """

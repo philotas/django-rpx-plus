@@ -51,7 +51,7 @@ packages, data_files = [], []
 root_dir = os.path.dirname(__file__)
 if root_dir != '':
     os.chdir(root_dir)
-extensions_dir = 'rpx'
+extensions_dir = 'django_rpx'
 
 for dirpath, dirnames, filenames in os.walk(extensions_dir):
     # Ignore dirnames that start with '.'
@@ -66,11 +66,11 @@ for dirpath, dirnames, filenames in os.walk(extensions_dir):
 
 
 setup(
-    name         = 'django-rpx',
-    description  = 'djago-rpx is a library that allows people to use the rpxnow.com service in django',
+    name         = 'django_rpx',
+    description  = 'djago_rpx is a library that allows people to use the rpxnow.com service in django',
     author       = 'howthebodyworks',
     author_email = 'none@none.com',
-    url          = 'http://github.com/howthebodyworks/django-rpx/tree/master',
+    url          = 'http://github.com/mikexstudios/django_rpx/tree/master',
     version      = '.2',
     platforms = ['any'],
     packages = packages,

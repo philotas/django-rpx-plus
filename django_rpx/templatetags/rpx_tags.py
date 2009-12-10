@@ -20,15 +20,16 @@ TODO:
 
 register = template.Library()
 
-@register.inclusion_tag('django_rpx/rpx_link.html', takes_context=True)
-def rpx_link(context, text):
+@register.inclusion_tag('django_rpx/rpx_link.html')
+def rpx_link(text, extra=''):
     current_site=Site.objects.get_current()
     
     return {
-      'text': text,
-      'realm': settings.RPXNOW_REALM,
-      'token_url': "http://%s%s" % (current_site.domain,
-        reverse('django_rpx.views.rpx_response'))
+        'text': text,
+        'extra': extra,
+        'realm': settings.RPXNOW_REALM,
+        'token_url': "http://%s%s" % (current_site.domain, 
+                                      reverse('django_rpx.views.rpx_response'))
     }
     
 """

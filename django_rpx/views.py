@@ -20,7 +20,6 @@ def rpx_response(request):
     #Since we specified the rpx auth backend in settings, this will use our
     #custom authenticate function.
     user = authenticate(token = token)
-    user = authenticate(token = token)
     if user and user.is_active:
         login(request, user)
         return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)

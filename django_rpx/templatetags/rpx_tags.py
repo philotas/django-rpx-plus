@@ -21,43 +21,42 @@ TODO:
 register = template.Library()
 
 @register.inclusion_tag('django_rpx/rpx_link.html')
-def rpx_link(text, extra=''):
+def rpx_link(text, extra = ''):
     current_site=Site.objects.get_current()
-    
     return {
         'text': text,
-        'extra': extra,
         'realm': settings.RPXNOW_REALM,
-        'token_url': "http://%s%s" % (current_site.domain, 
-                                      reverse('django_rpx.views.rpx_response'))
+        'token_url': "http://%s%s%s" % (current_site.domain, 
+                                        reverse('django_rpx.views.rpx_response'),
+                                        extra)
     }
-    
-"""
-put this in "rpx_script.html" in your templates dir.
-<a class="rpxnow" onclick="return false;"
-   href="https://{{ realm }}.rpxnow.com/openid/v2/signin?token_url={{ token_url }}">
-  {{ text }}
-</a>
-"""
 
 @register.inclusion_tag('django_rpx/rpx_script.html')
-def rpx_script():
+def rpx_script(extra = ''):
     current_site=Site.objects.get_current()
-    
     return {
-      'realm': settings.RPXNOW_REALM,
-      'token_url': "http://%s%s" %(current_site.domain,
-        reverse('django_rpx.views.rpx_response'))
+        'realm': settings.RPXNOW_REALM,
+        'token_url': "http://%s%s%s" %(current_site.domain,
+                                       reverse('django_rpx.views.rpx_response'),
+                                       extra)
     }
-    
-"""
-put this in "rpx_script.html" in your templates dir.
-<script src="https://rpxnow.com/openid/v2/widget"
-        type="text/javascript"></script>
-<script type="text/javascript">
-  RPXNOW.token_url = "{{ token_url }}";
-  RPXNOW.realm = "{{ realm }}";
-  RPXNOW.overlay = true;
-  RPXNOW.language_preference = 'en';
-</script>
-"""
+
+@register.inclusion_tag('django_rpx/rpx_embed.html')
+def rpx_embed(extra = ''):
+    current_site=Site.objects.get_current()
+    return {
+        'realm': settings.RPXNOW_REALM,
+        'token_url': "http://%s%s%s" %(current_site.domain,
+                                       reverse('django_rpx.views.rpx_response'),
+                                       extra)
+    }
+
+@register.inclusion_tag('django_rpx/rpx_url.html')
+def rpx_url(extra = ''):
+    current_site=Site.objects.get_current()
+    return {
+        'realm': settings.RPXNOW_REALM,
+        'token_url': "http://%s%s%s" %(current_site.domain,
+                                       reverse('django_rpx.views.rpx_response'),
+                                       extra)
+    }

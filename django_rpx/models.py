@@ -11,10 +11,10 @@ class RpxData(models.Model):
     #user. hm.
     user = models.ForeignKey("auth.User")
 
-    #Why should these fields be hard-coded? Putting all extra data into
-    #a serialized field.
-    #profile_pic_url = models.URLField(blank=True, verify_exists=False)
-    #info_page_url = models.URLField(blank=True, verify_exists=False)
+    #Flag that specifies whether the Rpx login has been associated with a User
+    #yet. It is used, in conjunction with User.is_active = False, to redirect
+    #the user to a 'register' page.
+    is_associated = models.BooleanField(default = False)
 
     #Maybe we should go back to using TextField for identifier? We are
     #assuming that it'll always be a URL...

@@ -46,6 +46,8 @@ class RpxBackend:
             #TODO: Check for why we have failure. See https://rpxnow.com/docs
             #      for the error codes.
             return None
+        #At this point, we assume that the RPX authentication has been
+        #successful. So no matter what, we will return a User object.
         
         #We can obtain user information for as long as the token is active
         #(which is 10 minutes). Since token has a short life-time, it's a good
@@ -71,17 +73,23 @@ class RpxBackend:
         #      function.
         if not user:
             #no match, create a new user - but there may be duplicate user names.
-            username=nickname
-            user=None
+            username = nickname
+            user = None
             try:
                 i=0
                 while True:
                     User.objects.get(username=username)
-                    username=permute_name(nickname, i)
-                    i+=1
+                    username = permute_name(nickname, i)
+                    i += 1
             except User.DoesNotExist:
                 #available name!
-                user=User.objects.create_user(username, email)
+                user = User.objects.create_user(username, email)
+        
+            #Since this is a new user, we do not active the user until the Rpx
+            #login has been registered or have been really associated with the
+            #new user account.
+            user.is_active = False
+
             # Store the original nickname for display
             # TODO: We'll move this to the new user function/view
             # user.first_name = nickname

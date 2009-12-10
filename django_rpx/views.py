@@ -12,18 +12,14 @@ def permute_name(name_string, num):
 
 def rpx_response(request):
     #Get the token from either POST or GET
-    token = request.POST.get('token', '')
+    token = request.POST.get('token', False) 
     if not token:
-        token = request.GET.get('token', '')
+        token = request.GET.get('token', False)
     if not token: return HttpResponseForbidden()
     
-    #Okay, we get the token, but now we must use the token to grab the
-    #auth_info. So we'll just store the token in db for another function to 
-    #grab auth_info...
-    print request.POST
-
     #Since we specified the rpx auth backend in settings, this will use our
     #custom authenticate function.
+    user = authenticate(token = token)
     user = authenticate(token = token)
     if user and user.is_active:
         login(request, user)

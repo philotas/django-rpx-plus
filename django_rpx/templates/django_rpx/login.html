@@ -45,13 +45,13 @@
     have:
     </p>
 
-    {% rpx_embed "?next=/accounts/register/" %}
+    {% rpx_embed "?next=/accounts/profile/" %}
     
     <p id="login_link">
-    Or, {% rpx_link "click here to login via the popup widget" "?next=/accounts/register/" %}.
+    Or, {% rpx_link "click here to login via the popup widget" "?next=/accounts/profile/" %}.
     </p>
 {% endblock %}
 
 {% block bodyend %}
-    {% rpx_script "?next=/accounts/register/" %}
+    {% rpx_script "?next=/accounts/profile/" %}
 {% endblock %}

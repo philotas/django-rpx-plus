@@ -1,7 +1,8 @@
-from django.http import HttpResponseRedirect, HttpResponseForbidden
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.shortcuts import render_to_response
+from django.contrib.auth.models import User
 
 from django_rpx.models import RpxData
 
@@ -52,3 +53,8 @@ def rpx_response(request):
     
     #If no user object is returned, then authentication has failed.
     return HttpResponseForbidden()
+
+
+def login(request):
+    return render_to_response('django_rpx/login.html', {
+                              })

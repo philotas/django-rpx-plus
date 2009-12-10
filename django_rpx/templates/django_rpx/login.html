@@ -1,0 +1,57 @@
+{% extends "django_rpx/base.html" %}
+{% load rpx_tags %}
+
+{% block bodyid %}login{% endblock %}
+{% block title %}Login or Signup{% endblock %}
+
+{% block extracss %}
+<style type="text/css">
+    #container {
+        width: 500px;
+        margin: 5px auto;
+    }
+    #header {
+        text-align: center;
+    }
+    #content #helper {
+        text-align: center;
+    }
+    #content #rpx_embed {
+        display: block;
+        margin: 0 auto;
+        border: 1px solid #ccc;
+        width: 330px !important;
+        height: 240px !important;
+        padding-top: 15px;
+        padding-bottom: 5px;
+        padding-left: 28px;
+        padding-right: 5px;
+    }
+    #content #login_link {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+</style>
+{% endblock %}
+
+{% block header %}
+    <h1>Login or Signup</h1>
+{% endblock %}
+
+{% block content %}
+    <p id="helper">
+    Logging in is <em>easy</em>. Just sign in using an account you already
+    have:
+    </p>
+
+    {% rpx_embed "?next=/accounts/register/" %}
+    
+    <p id="login_link">
+    Or, {% rpx_link "click here to login via the popup widget" "?next=/accounts/register/" %}.
+    </p>
+{% endblock %}
+
+{% block bodyend %}
+    {% rpx_script "?next=/accounts/register/" %}
+{% endblock %}

@@ -10,6 +10,6 @@ urlpatterns = patterns('django_rpx.views',
     #    name='registration_activation_complete'),
     url(r'^rpx_response/$', 'rpx_response', name='rpx_response'),
     #url(r'^register/$', 'register', name='auth_register'),
-    #url(r'^login/$', 'login', name='auth_login'),
+    url(r'^login/$', 'login', name='auth_login'),
     #url(r'^logout/$', 'logout', name='auth_logout'),
 )

@@ -5,6 +5,9 @@ from django_rpx.models import RpxData
 from django.conf import settings
 from django_rpx.views import permute_name
 
+import hashlib #encryption (MD5)
+import time #for seeding
+
 TRUSTED_PROVIDERS=set(getattr(settings,'RPX_TRUSTED_PROVIDERS', []))
 
 class RpxBackend:
@@ -61,26 +64,21 @@ class RpxBackend:
         rpx_id = profile['identifier'] #guaranteed
         provider = profile['providerName'] #guaranteed
 
-        #TODO: Get rid of below lines.
-        nickname = profile.get('preferredUsername') or profile.get('displayName')
-        email = profile.get('email', '') #default to ''
-        #profile_pic_url = profile.get('photo')
-        #info_page_url = profile.get('url')
-
         user = self.get_user_by_rpx_id(rpx_id)
         
-        #TODO: Don't handle the new user here. Pass on to a view or other
-        #      function.
         if not user:
-            #no match, create a new user - but there may be duplicate user names.
-            username = nickname
-            user = None
+            #No match, create a new user. We put in a dummy username.
+            md5 = hashlib.md5()
+            username = ''
+            email = profile.get('email', '') #default to ''
             try:
-                i=0
                 while True:
-                    User.objects.get(username=username)
-                    username = permute_name(nickname, i)
-                    i += 1
+                    #Generate an md5 hash from time. We'll use this as our
+                    #dummy username for now until user changes it.
+                    md5.update(str(time.time())) #seeded with time
+                    username = md5.hexdigest()
+                    username = username[:30] #User.username max_length = 30
+                    User.objects.get(username = username)
             except User.DoesNotExist:
                 #available name!
                 user = User.objects.create_user(username, email)

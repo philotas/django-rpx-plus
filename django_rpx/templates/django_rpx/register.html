@@ -86,10 +86,6 @@
     </form>
     
     <p id="login_link">
-    Or, <a href="">associate this account with an existing username</a>.
+    Or, <a href="{% url auth_associate %}">associate this account with an existing username</a>.
     </p>
-{% endblock %}
-
-{% block bodyend %}
-    {% rpx_script "?next=/accounts/register/" %}
 {% endblock %}

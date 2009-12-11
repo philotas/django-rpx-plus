@@ -3,6 +3,7 @@ import django.contrib.auth as auth
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 from django_rpx.models import RpxData
 from django_rpx.forms import RegisterForm
@@ -57,6 +58,46 @@ def rpx_response(request):
     #If no user object is returned, then authentication has failed.
     return HttpResponseForbidden()
 
+def associate_rpx_response(request):
+    #RPX sends token back via POST
+    token = request.POST.get('token', False)
+    if not token: return HttpResponseForbidden()
+
+    #See if a redirect param is specified. params are sent via both POST and
+    #GET. If not, we will default to LOGIN_REDIRECT_URL.
+    try:
+        destination = request.POST['next']
+    except KeyError:
+        destination = settings.LOGIN_REDIRECT_URL
+    
+    #Since we specified the rpx auth backend in settings, this will use our
+    #custom authenticate function.
+    user = auth.authenticate(token = token)
+    if user and not user.is_active:
+        try:
+            #Make sure this login hasn't been associated yet:
+            user_rpxdata = RpxData.objects.get(user = user)
+            if user_rpxdata.is_associated == False:
+                #Okay! This means that we can now associate this login. First,
+                #delete the dummy user:
+                user.delete()
+                #Now point the user foreign key on user_rpxdata:
+                user_rpxdata.user = request.user
+                #Set associated flag
+                user_rpxdata.is_associated = True
+                user_rpxdata.save()
+                
+                #The destination is most likely /accounts/associate/
+                return HttpResponseRedirect(destination)
+        except RpxData.DoesNotExist:
+            #Do nothing, auth has failed.
+            pass
+    
+    #Getting here means that we don't have a login that hasn't been associated yet.
+    #return HttpResponseForbidden()
+    return render_to_response('django_rpx/associate_failed.html', {
+                              })
+
 #TODO: Just render this template in urls.py
 def login(request):
     return render_to_response('django_rpx/login.html', {
@@ -98,4 +139,24 @@ def register(request):
 
     return render_to_response('django_rpx/register.html', {
                                 'form': form,
+                              })
+
+def associate(request):
+    #If user has signed into an account and it is active, then show interface
+    #for associating additional accounts:
+    if request.user.is_authenticated() and request.user.is_active:
+        #Get associated accounts
+        user_rpxdatas = RpxData.objects.filter(user = request.user)
+
+        #We need to send the rpx_response to a customized method so we pass the
+        #custom rpx_response path into template:
+        return render_to_response('django_rpx/associate.html', {
+                                    'user': request.user, 
+                                    'user_rpxdatas': user_rpxdatas,
+                                    'rpx_response_path': reverse('associate_rpx_response'),
+                                  })
+
+    #For all other cases (ie. logged out users, unactivated users), we just
+    #show them instructions. No harm in that...
+    return render_to_response('django_rpx/associate_instructions.html', {
                               })

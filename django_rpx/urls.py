@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
+import django.contrib.auth.views as auth_views
 
 #import django_rpx.views
 
@@ -13,5 +14,7 @@ urlpatterns = patterns('django_rpx.views',
     url(r'^register/$', 'register', name='auth_register'),
     url(r'^associate/$', 'associate', name='auth_associate'),
     url(r'^associate/rpx_response/$', 'associate_rpx_response', name='associate_rpx_response'),
-    #url(r'^logout/$', 'logout', name='auth_logout'),
+    url(r'^logout/$', auth_views.logout, 
+                      {'template_name': 'django_rpx/logged_out.html'}, 
+                      name='auth_logout'),
 )

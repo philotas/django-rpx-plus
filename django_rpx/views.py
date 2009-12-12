@@ -22,6 +22,8 @@ def rpx_response(request):
     #GET. If not, we will default to LOGIN_REDIRECT_URL.
     try:
         destination = request.POST['next']
+        if destination.strip() == '':
+            raise KeyError
     except KeyError:
         destination = settings.LOGIN_REDIRECT_URL
     
@@ -67,6 +69,8 @@ def associate_rpx_response(request):
     #GET. If not, we will default to LOGIN_REDIRECT_URL.
     try:
         destination = request.POST['next']
+        if destination.strip() == '':
+            raise KeyError
     except KeyError:
         destination = settings.LOGIN_REDIRECT_URL
     
@@ -103,7 +107,12 @@ def home(request):
 
 #TODO: Just render this template in urls.py
 def login(request):
+    next = request.GET.get('next', '/accounts/profile')
+    
+    next = '?next='+next
+
     return render_to_response('django_rpx/login.html', {
+                                'next': next,
                               })
 
 def register(request):
@@ -165,6 +174,10 @@ def associate(request):
                               })
 
 def profile(request):
+    #TODO: Should use auth decorator instead of this:
+    if not request.user.is_authenticated() or not request.user.is_active:
+        return HttpResponseRedirect(reverse('auth_login'))
+
     message = False #A crude hack for displaying success messages
     if request.method == 'POST':
         form = ProfileForm(request.POST)
@@ -193,4 +206,5 @@ def profile(request):
     return render_to_response('django_rpx/profile.html', {
                                 'form': form,
                                 'message': message,
+                                'user': request.user,
                               })

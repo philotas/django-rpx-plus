@@ -4,6 +4,13 @@
 <head>
     <title>{% block title %}django_rpx example{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <style type="text/css">
+        #navigation {
+            text-align: right;
+        }
+    </style>
+
     {% block extracss %}{% endblock %}
 
     {% block javascript %}{% endblock %}
@@ -14,6 +21,14 @@
 <body id="{% block bodyid %}{% endblock %}">
 
 <div id="container">
+
+{% if user.is_authenticated %}
+<div id="navigation">
+    <ul>
+        <a href="{% url auth_logout %}">Logout</a>
+    </ul>
+</div>
+{% endif %}
 
 <div id="header">
 {% block header %}

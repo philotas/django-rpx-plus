@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from django_rpx.models import RpxData
-from django_rpx.forms import RegisterForm
+from django_rpx.forms import RegisterForm, ProfileForm
 
 def permute_name(name_string, num):
     num_str=str(num)
@@ -98,6 +98,9 @@ def associate_rpx_response(request):
     return render_to_response('django_rpx/associate_failed.html', {
                               })
 
+def home(request):
+    return HttpResponseRedirect(reverse('auth_profile'))
+
 #TODO: Just render this template in urls.py
 def login(request):
     return render_to_response('django_rpx/login.html', {
@@ -159,4 +162,35 @@ def associate(request):
     #For all other cases (ie. logged out users, unactivated users), we just
     #show them instructions. No harm in that...
     return render_to_response('django_rpx/associate_instructions.html', {
+                              })
+
+def profile(request):
+    message = False #A crude hack for displaying success messages
+    if request.method == 'POST':
+        form = ProfileForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data
+            print data
+
+            #Update user with form data
+            request.user.first_name = data['first_name']
+            request.user.last_name = data['last_name']
+            request.user.email = data['email']
+            request.user.save()
+
+            message = 'Successfully updated profile!'
+
+            #Stay on profile page.
+            #return HttpResponse('success')
+    else: 
+        #Try to pre-populate the form with user data.
+        form = ProfileForm(initial = {
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'email': request.user.email,
+        })
+
+    return render_to_response('django_rpx/profile.html', {
+                                'form': form,
+                                'message': message,
                               })

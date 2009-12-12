@@ -25,6 +25,7 @@
 {% if user.is_authenticated %}
 <div id="navigation">
     <ul>
+        <a href="{% url auth_profile %}">Profile</a> | 
         <a href="{% url auth_logout %}">Logout</a>
     </ul>
 </div>

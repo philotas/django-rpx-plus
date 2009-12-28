@@ -1,6 +1,7 @@
 from django.conf import settings
 import django.contrib.auth as auth
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
+from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -100,7 +101,8 @@ def associate_rpx_response(request):
     #Getting here means that we don't have a login that hasn't been associated yet.
     #return HttpResponseForbidden()
     return render_to_response('django_rpx/associate_failed.html', {
-                              })
+                              },
+                              context_instance = RequestContext(request))
 
 def home(request):
     return HttpResponseRedirect(reverse('auth_profile'))
@@ -113,7 +115,8 @@ def login(request):
 
     return render_to_response('django_rpx/login.html', {
                                 'next': next,
-                              })
+                              },
+                              context_instance = RequestContext(request))
 
 def register(request):
     if request.method == 'POST':
@@ -151,7 +154,8 @@ def register(request):
 
     return render_to_response('django_rpx/register.html', {
                                 'form': form,
-                              })
+                              },
+                              context_instance = RequestContext(request))
 
 def associate(request):
     #If user has signed into an account and it is active, then show interface
@@ -166,12 +170,14 @@ def associate(request):
                                     'user': request.user, 
                                     'user_rpxdatas': user_rpxdatas,
                                     'rpx_response_path': reverse('associate_rpx_response'),
-                                  })
+                                  },
+                                  context_instance = RequestContext(request))
 
     #For all other cases (ie. logged out users, unactivated users), we just
     #show them instructions. No harm in that...
     return render_to_response('django_rpx/associate_instructions.html', {
-                              })
+                              },
+                              context_instance = RequestContext(request))
 
 def profile(request):
     #TODO: Should use auth decorator instead of this:
@@ -207,4 +213,5 @@ def profile(request):
                                 'form': form,
                                 'message': message,
                                 'user': request.user,
-                              })
+                              },
+                              context_instance = RequestContext(request))

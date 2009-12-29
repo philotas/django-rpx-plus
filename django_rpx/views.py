@@ -169,6 +169,7 @@ def associate(request):
         return render_to_response('django_rpx/associate.html', {
                                     'user': request.user, 
                                     'user_rpxdatas': user_rpxdatas,
+                                    'num_logins': len(user_rpxdatas), 
                                     'rpx_response_path': reverse('associate_rpx_response'),
                                   },
                                   context_instance = RequestContext(request))

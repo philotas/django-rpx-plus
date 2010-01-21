@@ -5,7 +5,9 @@ import settings
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
 """
-"rpx_tags" is a slightly redundant name, but if i clall this module simple "rpx" it only allows me to use the first tag found (although all tags appear in the libary)
+"rpx_tags" is a slightly redundant name, but if I call this module simple
+"rpx" it only allows me to use the first tag found (although all tags appear
+in the libary)
 
 weird.
 
@@ -32,13 +34,19 @@ def rpx_link(text, extra = '', rpx_response = reverse('django_rpx.views.rpx_resp
     }
 
 @register.inclusion_tag('django_rpx/rpx_script.html')
-def rpx_script(extra = '', rpx_response = reverse('django_rpx.views.rpx_response')):
+def rpx_script(extra = '', rpx_response = reverse('django_rpx.views.rpx_response'), flags = ''):
+    '''
+    Arguments to flag will go into the RPXNOW.flags = '' var. A good use case 
+    would be to set flags = 'show_provider_list' to force showing all login providers
+    even if user is logged in.
+    '''
     current_site=Site.objects.get_current()
     return {
         'realm': settings.RPXNOW_REALM,
         'token_url': "http://%s%s%s" %(current_site.domain,
                                        rpx_response,
-                                       extra)
+                                       extra),
+        'flags': flags,
     }
 
 @register.inclusion_tag('django_rpx/rpx_embed.html')

@@ -110,11 +110,10 @@ def home(request):
 #TODO: Just render this template in urls.py
 def login(request):
     next = request.GET.get('next', '/accounts/profile')
-    
-    next = '?next='+next
+    extra = {'next': next}
 
     return render_to_response('django_rpx/login.html', {
-                                'next': next,
+                                'extra': extra,
                               },
                               context_instance = RequestContext(request))
 

@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 #import re
 
 class RegisterForm(forms.Form):
-    username = forms.CharField(max_length = 30, label = 'Username')
+    username = forms.RegexField(regex=r'^\w+$', max_length = 30, label = 'Username', 
+                                error_message = 'The username must contain only letters, numbers and underscores.')
     email = forms.EmailField(label = 'Email Address')
     
     def clean_username(self):

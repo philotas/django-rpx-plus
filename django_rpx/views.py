@@ -121,6 +121,15 @@ def login(request):
 
 def register(request):
     if request.method == 'POST':
+        #See if a redirect param is specified. If not, we will default to
+        #LOGIN_REDIRECT_URL.
+        try:
+            destination = request.GET['next']
+            if destination.strip() == '':
+                raise KeyError
+        except KeyError:
+            destination = settings.LOGIN_REDIRECT_URL
+
         form = RegisterForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
@@ -137,9 +146,7 @@ def register(request):
             user_rpxdata.is_associated = True
             user_rpxdata.save()
 
-            #Return to show page
-            return HttpResponse('success')
-            #return HttpResponseRedirect(reverse('auth_profile'))
+            return HttpResponseRedirect(destination)
     else: 
         #Try to pre-populate the form with data gathered from the RPX login.
         try:

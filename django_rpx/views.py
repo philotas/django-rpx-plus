@@ -17,86 +17,86 @@ def permute_name(name_string, num):
 def rpx_response(request):
     #RPX sends token back via POST
     token = request.POST.get('token', False)
-    if not token: return HttpResponseForbidden()
-
-    #See if a redirect param is specified. params are sent via both POST and
-    #GET. If not, we will default to LOGIN_REDIRECT_URL.
-    try:
-        destination = request.POST['next']
-        if destination.strip() == '':
-            raise KeyError
-    except KeyError:
-        destination = settings.LOGIN_REDIRECT_URL
-    
-    #Since we specified the rpx auth backend in settings, this will use our
-    #custom authenticate function.
-    user = auth.authenticate(token = token)
-    if user:
-        if user.is_active:
-            #login creates session for the user.
-            auth.login(request, user)
-            return HttpResponseRedirect(destination)
-        else:
-            #User is not active. There is a possibility that the user is new
-            #and needs to be registered/associated. We check that here. First,
-            #get associated RpxData. Since we created a new dummy user for this
-            #new Rpx login, we *know* that there will only be one RpxData
-            #associated to this dummy user. If no RpxData exists for the user,
-            #or if is_associated is True, then we assume that the User has
-            #been deactivated.
-            try:
-                user_rpxdata = RpxData.objects.get(user = user)
-                if user_rpxdata.is_associated == False:
-                    #Okay! This means that we have a new user waiting to be
-                    #associated to an account!
-                    #TODO: Make sure we really need to login here...
-                    auth.login(request, user)
-                    return HttpResponseRedirect(settings.REGISTER_URL+\
-                                                '?next='+destination)
-            except RpxData.DoesNotExist:
-                #Do nothing, auth has failed.
-                pass
+    if token: 
+        #See if a redirect param is specified. params are sent via both POST and
+        #GET. If not, we will default to LOGIN_REDIRECT_URL.
+        try:
+            destination = request.POST['next']
+            if destination.strip() == '':
+                raise KeyError
+        except KeyError:
+            destination = settings.LOGIN_REDIRECT_URL
+        
+        #Since we specified the rpx auth backend in settings, this will use our
+        #custom authenticate function.
+        user = auth.authenticate(token = token)
+        if user:
+            if user.is_active:
+                #login creates session for the user.
+                auth.login(request, user)
+                return HttpResponseRedirect(destination)
+            else:
+                #User is not active. There is a possibility that the user is new
+                #and needs to be registered/associated. We check that here. First,
+                #get associated RpxData. Since we created a new dummy user for this
+                #new Rpx login, we *know* that there will only be one RpxData
+                #associated to this dummy user. If no RpxData exists for the user,
+                #or if is_associated is True, then we assume that the User has
+                #been deactivated.
+                try:
+                    user_rpxdata = RpxData.objects.get(user = user)
+                    if user_rpxdata.is_associated == False:
+                        #Okay! This means that we have a new user waiting to be
+                        #associated to an account!
+                        #TODO: Make sure we really need to login here...
+                        auth.login(request, user)
+                        return HttpResponseRedirect(settings.REGISTER_URL+\
+                                                    '?next='+destination)
+                except RpxData.DoesNotExist:
+                    #Do nothing, auth has failed.
+                    pass
 
     
     #If no user object is returned, then authentication has failed.
-    return HttpResponseForbidden()
+    return render_to_response('django_rpx/auth_error.html', {
+                              },
+                              context_instance = RequestContext(request))
 
 def associate_rpx_response(request):
     #RPX sends token back via POST
     token = request.POST.get('token', False)
-    if not token: return HttpResponseForbidden()
-
-    #See if a redirect param is specified. params are sent via both POST and
-    #GET. If not, we will default to LOGIN_REDIRECT_URL.
-    try:
-        destination = request.POST['next']
-        if destination.strip() == '':
-            raise KeyError
-    except KeyError:
-        destination = settings.LOGIN_REDIRECT_URL
-    
-    #Since we specified the rpx auth backend in settings, this will use our
-    #custom authenticate function.
-    user = auth.authenticate(token = token)
-    if user and not user.is_active:
+    if token: 
+        #See if a redirect param is specified. params are sent via both POST and
+        #GET. If not, we will default to LOGIN_REDIRECT_URL.
         try:
-            #Make sure this login hasn't been associated yet:
-            user_rpxdata = RpxData.objects.get(user = user)
-            if user_rpxdata.is_associated == False:
-                #Okay! This means that we can now associate this login. First,
-                #delete the dummy user:
-                user.delete()
-                #Now point the user foreign key on user_rpxdata:
-                user_rpxdata.user = request.user
-                #Set associated flag
-                user_rpxdata.is_associated = True
-                user_rpxdata.save()
-                
-                #The destination is most likely /accounts/associate/
-                return HttpResponseRedirect(destination)
-        except RpxData.DoesNotExist:
-            #Do nothing, auth has failed.
-            pass
+            destination = request.POST['next']
+            if destination.strip() == '':
+                raise KeyError
+        except KeyError:
+            destination = settings.LOGIN_REDIRECT_URL
+        
+        #Since we specified the rpx auth backend in settings, this will use our
+        #custom authenticate function.
+        user = auth.authenticate(token = token)
+        if user and not user.is_active:
+            try:
+                #Make sure this login hasn't been associated yet:
+                user_rpxdata = RpxData.objects.get(user = user)
+                if user_rpxdata.is_associated == False:
+                    #Okay! This means that we can now associate this login. First,
+                    #delete the dummy user:
+                    user.delete()
+                    #Now point the user foreign key on user_rpxdata:
+                    user_rpxdata.user = request.user
+                    #Set associated flag
+                    user_rpxdata.is_associated = True
+                    user_rpxdata.save()
+                    
+                    #The destination is most likely /accounts/associate/
+                    return HttpResponseRedirect(destination)
+            except RpxData.DoesNotExist:
+                #Do nothing, auth has failed.
+                pass
     
     #Getting here means that we don't have a login that hasn't been associated yet.
     #return HttpResponseForbidden()
@@ -170,6 +170,7 @@ def associate(request):
                                     'user_rpxdatas': user_rpxdatas,
                                     'num_logins': len(user_rpxdatas), 
                                     'rpx_response_path': reverse('associate_rpx_response'),
+                                    'extra': {'next': reverse('auth_associate')},
                                   },
                                   context_instance = RequestContext(request))
 

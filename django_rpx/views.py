@@ -157,29 +157,22 @@ def register(request):
                               context_instance = RequestContext(request))
 
 def associate(request):
-    #If user has signed into an account and it is active, then show interface
-    #for associating additional accounts:
-    if request.user.is_authenticated() and request.user.is_active:
-        #Get associated accounts
-        user_rpxdatas = RpxData.objects.filter(user = request.user)
+    if not request.user.is_authenticated() or not request.user.is_active:
+        return HttpResponseRedirect(reverse('auth_login'))
 
-        #We need to send the rpx_response to a customized method so we pass the
-        #custom rpx_response path into template:
-        return render_to_response('django_rpx/associate.html', {
-                                    'user': request.user, 
-                                    'user_rpxdatas': user_rpxdatas,
-                                    'num_logins': len(user_rpxdatas), 
-                                    'rpx_response_path': reverse('associate_rpx_response'),
-                                    'extra': {'next': reverse('auth_associate')},
-                                  },
-                                  context_instance = RequestContext(request))
+    #Get associated accounts
+    user_rpxdatas = RpxData.objects.filter(user = request.user)
 
-    #For all other cases (ie. logged out users, unactivated users), we just
-    #show them instructions. No harm in that...
-    return render_to_response('django_rpx/associate_instructions.html', {
+    #We need to send the rpx_response to a customized method so we pass the
+    #custom rpx_response path into template:
+    return render_to_response('django_rpx/associate.html', {
+                                'user': request.user, 
+                                'user_rpxdatas': user_rpxdatas,
+                                'num_logins': len(user_rpxdatas), 
+                                'rpx_response_path': reverse('associate_rpx_response'),
                                 'extra': {'next': reverse('auth_associate')},
                               },
-                              context_instance = RequestContext(request))
+                                  context_instance = RequestContext(request))
 
 def profile(request):
     #TODO: Should use auth decorator instead of this:

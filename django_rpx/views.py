@@ -177,6 +177,7 @@ def associate(request):
     #For all other cases (ie. logged out users, unactivated users), we just
     #show them instructions. No harm in that...
     return render_to_response('django_rpx/associate_instructions.html', {
+                                'extra': {'next': reverse('auth_associate')},
                               },
                               context_instance = RequestContext(request))
 

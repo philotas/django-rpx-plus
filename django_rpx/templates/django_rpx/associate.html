@@ -38,12 +38,12 @@
             {% endfor %}
         </ul>
         <p id="add_login">
-            {% rpx_link "To add another login to your account, click here to sign in with a <em>different</em> login." "?next=/accounts/associate/" rpx_response_path %}
+            {% rpx_link "To add another login to your account, click here to sign in with a <em>different</em> login." extra rpx_response_path %}
         </p>
     </div>
 
 {% endblock %}
 
 {% block bodyend %}
-    {% rpx_script "?next=/accounts/associate/" rpx_response_path %}
+    {% rpx_script extra rpx_response_path %}
 {% endblock %}

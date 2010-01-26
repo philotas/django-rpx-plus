@@ -9,6 +9,8 @@ from django.core.urlresolvers import reverse
 from django_rpx.models import RpxData
 from django_rpx.forms import RegisterForm, ProfileForm
 
+import re #for sub in register
+
 def permute_name(name_string, num):
     num_str=str(num)
     max_len=29-len(num_str)
@@ -143,9 +145,14 @@ def register(request):
         try:
             user_rpxdata = RpxData.objects.get(user = request.user)
             profile = user_rpxdata.profile
+
+            #Clean the username to allow only alphanum and underscore.
+            username =  profile.get('preferredUsername') or \
+                        profile.get('displayName')
+            username = re.sub(r'[^\w+]', '', username)
+
             form = RegisterForm(initial = {
-                'username': profile.get('preferredUsername') or \
-                            profile.get('displayName'),
+                'username': username,
                 'email': profile.get('email', '')
             })
         except RpxData.DoesNotExist:

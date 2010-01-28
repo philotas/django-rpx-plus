@@ -6,6 +6,13 @@ from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
+#The reason why we use django's urlencode instead of urllib's urlencode is that
+#django's version can operate on unicode strings.
+from django.utils.http import urlencode
+
+#TODO: Catch exception, try to import real messages framework first.
+import django_messages_framework as messages #backport of messages framework
+
 from django_rpx.models import RpxData
 from django_rpx.forms import RegisterForm, ProfileForm
 
@@ -17,18 +24,18 @@ def permute_name(name_string, num):
     return ''.join([name_string[0:max_len], '-', num_str])
 
 def rpx_response(request):
+    #See if a redirect param is specified. params are sent via both POST and
+    #GET. If not, we will default to LOGIN_REDIRECT_URL.
+    try:
+        destination = request.POST['next']
+        if destination.strip() == '':
+            raise KeyError
+    except KeyError:
+        destination = settings.LOGIN_REDIRECT_URL
+        
     #RPX sends token back via POST
     token = request.POST.get('token', False)
     if token: 
-        #See if a redirect param is specified. params are sent via both POST and
-        #GET. If not, we will default to LOGIN_REDIRECT_URL.
-        try:
-            destination = request.POST['next']
-            if destination.strip() == '':
-                raise KeyError
-        except KeyError:
-            destination = settings.LOGIN_REDIRECT_URL
-        
         #Since we specified the rpx auth backend in settings, this will use our
         #custom authenticate function.
         user = auth.authenticate(token = token)
@@ -59,24 +66,26 @@ def rpx_response(request):
                     pass
 
     
-    #If no user object is returned, then authentication has failed.
-    return render_to_response('django_rpx/auth_error.html', {
-                              },
-                              context_instance = RequestContext(request))
+    #If no user object is returned, then authentication has failed. We'll send
+    #user to login page where error message is displayed.
+    #Set success message.
+    messages.error(request, 'There was an error in signing you in. Try again?')
+    destination = urlencode({'next': destination})
+    return HttpResponseRedirect(reverse('auth_login')+'?'+destination)
 
 def associate_rpx_response(request):
+    #See if a redirect param is specified. params are sent via both POST and
+    #GET. If not, we will default to LOGIN_REDIRECT_URL.
+    try:
+        destination = request.POST['next']
+        if destination.strip() == '':
+            raise KeyError
+    except KeyError:
+        destination = settings.LOGIN_REDIRECT_URL
+
     #RPX sends token back via POST
     token = request.POST.get('token', False)
     if token: 
-        #See if a redirect param is specified. params are sent via both POST and
-        #GET. If not, we will default to LOGIN_REDIRECT_URL.
-        try:
-            destination = request.POST['next']
-            if destination.strip() == '':
-                raise KeyError
-        except KeyError:
-            destination = settings.LOGIN_REDIRECT_URL
-        
         #Since we specified the rpx auth backend in settings, this will use our
         #custom authenticate function.
         user = auth.authenticate(token = token)

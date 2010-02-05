@@ -81,7 +81,7 @@ def associate_rpx_response(request):
         if destination.strip() == '':
             raise KeyError
     except KeyError:
-        destination = settings.LOGIN_REDIRECT_URL
+        destination = reverse('auth_associate')
 
     #RPX sends token back via POST
     token = request.POST.get('token', False)
@@ -89,31 +89,49 @@ def associate_rpx_response(request):
         #Since we specified the rpx auth backend in settings, this will use our
         #custom authenticate function.
         user = auth.authenticate(token = token)
-        if user and not user.is_active:
-            try:
-                #Make sure this login hasn't been associated yet:
-                user_rpxdata = RpxData.objects.get(user = user)
-                if user_rpxdata.is_associated == False:
-                    #Okay! This means that we can now associate this login. First,
-                    #delete the dummy user:
+        #Here are our cases:
+        # user  user.is_active  ->  case
+        #  T          T         ->  valid login, already associated
+        #  T          F         ->  valid login, not associated
+        #  F          T         ->  impossible case
+        #  F          F         ->  in-valid login
+        if user:
+            if not user.is_active: #means non-associated, valid account 
+                try:
+                    user_rpxdata = RpxData.objects.get(user = user)
+                    assert user_rpxdata.is_associated == False
+
+                    #Associating the login. First, delete the dummy user:
                     user.delete()
                     #Now point the user foreign key on user_rpxdata:
                     user_rpxdata.user = request.user
                     #Set associated flag
                     user_rpxdata.is_associated = True
                     user_rpxdata.save()
+
+                    #Set success message
+                    messages.success(request, 'We successfully associated your new login with this account!')
                     
                     #The destination is most likely /accounts/associate/
                     return HttpResponseRedirect(destination)
-            except RpxData.DoesNotExist:
-                #Do nothing, auth has failed.
-                pass
-    
-    #Getting here means that we don't have a login that hasn't been associated yet.
-    #return HttpResponseForbidden()
-    return render_to_response('django_rpx/associate_failed.html', {
-                              },
-                              context_instance = RequestContext(request))
+                except RpxData.DoesNotExist:
+                    #Shouldn't happen since we needed to store the rpx data in
+                    #order to auth the user.
+                    messages.error(request, 'Unfortunately, we were unable to associate your new login with your current account. Try again?')
+            else: #user.is_active = True; means already associated acct
+                messages.error(request, 'Sorry, this login has already been associated with an existing account.')
+        else: 
+            #Rare that we'd get here. Means that we didn't send the right token or 
+            #RPX had some server error in returning user info from the token we
+            #sent.
+            messages.error(request, 'There was an error in accessing your new login information. Try again?')
+    else:
+        #Means that user canceled the auth process or there was a sign-in error.
+        messages.error(request, 'Unsuccessful login. Try again?')
+
+    #Getting here means that the 
+    #return HttpResponseRedirect(reverse('auth_associate'))
+    return HttpResponseRedirect(destination)
 
 def home(request):
     return HttpResponseRedirect(reverse('auth_profile'))

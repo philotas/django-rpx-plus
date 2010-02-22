@@ -1,0 +1,32 @@
+# pip requirements file
+# ---------------------
+# You can use this file with pip to easily install all of your python project's
+# dependencies like:
+#   pip install -r requirements.txt
+# If you are using virtualenv with pip, you can install to the environment that
+# you've created by:
+#   pip -E [environment] install -r requirements.txt
+# For a sample of some things that you can include in this pip file, see:
+#   http://gist.github.com/192093
+
+Django
+
+# If using MySQL, uncomment the relevant line below:
+# Ideally, we'd just use the below line, but since sourceforge has issues
+# installing with pip (ie. really long wait for download), we can specify the
+# zip directly.
+#mysql-python
+http://downloads.sourceforge.net/project/mysql-python/mysql-python-test/1.2.3c1/MySQL-python-1.2.3c1.tar.gz?use_mirror=voxel
+
+# This is the django_rpx project that we grab from git.
+-e git://github.com/mikexstudios/django-rpx.git#egg=django_rpx
+
+# django_rpx currently depends on django_picklefield. Working to get rid of
+# this dependency.
+django-picklefield
+
+# Success and error messages are displayed using the new django message
+# framework.  However, the messages framework will only be available from 1.2
+# onwards. Since most people are still using <= 1.1.1, we can use the
+# backported message framework:
+django-messages-framework

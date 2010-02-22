@@ -1,0 +1,42 @@
+{% extends "django_rpx/base.html" %}
+
+{% block bodyid %}loggedout{% endblock %}
+{% block title %}Logged Out{% endblock %}
+
+{% block extracss %}
+<style type="text/css">
+    #container {
+        width: 500px;
+        margin: 5px auto;
+    }
+    #header {
+        text-align: center;
+    }
+    #content #helper {
+        text-align: center;
+    }
+    #content #rpx_embed {
+        display: block;
+        margin: 0 auto;
+        border: 1px solid #ccc;
+        width: 330px !important;
+        height: 240px !important;
+        padding-top: 15px;
+        padding-bottom: 5px;
+        padding-left: 28px;
+        padding-right: 5px;
+    }
+
+</style>
+{% endblock %}
+
+{% block header %}
+    <h1>You have been logged out.</h1>
+{% endblock %}
+
+{% block content %}
+    <p id="helper">
+    To login again, <a href="{% url auth_login %}">visit the login page</a>.
+    </p>
+
+{% endblock %}

@@ -10,8 +10,13 @@ from django.core.urlresolvers import reverse
 #django's version can operate on unicode strings.
 from django.utils.http import urlencode
 
-#TODO: Catch exception, try to import real messages framework first.
-import django_messages_framework as messages #backport of messages framework
+# The messages framework will only be available from django 1.2 onwards. Since
+# most people are still using <= 1.1.1, we fallback on the backported message
+# framework:
+try:
+    from django.contrib import messages
+except ImportError:
+    import django_messages_framework as messages #backport of messages framework
 
 from django_rpx.models import RpxData
 from django_rpx.forms import RegisterForm, ProfileForm

@@ -27,23 +27,23 @@ TODO:
 
 register = template.Library()
 
-@register.inclusion_tag('django_rpx/rpx_link.html')
-def rpx_link(text, extra = None, rpx_response = reverse('django_rpx.views.rpx_response')):
-    current_site=Site.objects.get_current()
-
-    if extra != None:
+@register.inclusion_tag('django_rpx/rpx_link.html', takes_context=True)
+def rpx_link(context, text, extra = '', rpx_response = reverse('django_rpx.views.rpx_response')):
+    if extra != '':
         extra = '?'+urlencode(extra)
 
+    #Construct the token url:
+    token_url = "http://%s%s%s" % (context['request'].get_host(),
+                                   rpx_response,
+                                   extra)
     return {
         'text': text,
         'realm': settings.RPXNOW_REALM,
-        'token_url': "http://%s%s%s" % (current_site.domain, 
-                                        rpx_response,
-                                        extra)
+        'token_url': token_url,
     }
 
 @register.inclusion_tag('django_rpx/rpx_script.html')
-def rpx_script(extra = None, rpx_response = reverse('django_rpx.views.rpx_response'), flags = ''):
+def rpx_script(extra = '', rpx_response = reverse('django_rpx.views.rpx_response'), flags = ''):
     '''
     Arguments to flag will go into the RPXNOW.flags = '' var. A good use case 
     would be to set flags = 'show_provider_list' to force showing all login providers
@@ -51,7 +51,7 @@ def rpx_script(extra = None, rpx_response = reverse('django_rpx.views.rpx_respon
     '''
     current_site = Site.objects.get_current()
 
-    if extra != None:
+    if extra != '':
         extra = '?'+urlencode(extra)
 
     return {
@@ -63,10 +63,10 @@ def rpx_script(extra = None, rpx_response = reverse('django_rpx.views.rpx_respon
     }
 
 @register.inclusion_tag('django_rpx/rpx_embed.html')
-def rpx_embed(extra = None, rpx_response = reverse('django_rpx.views.rpx_response')):
+def rpx_embed(extra = '', rpx_response = reverse('django_rpx.views.rpx_response')):
     current_site = Site.objects.get_current()
 
-    if extra != None:
+    if extra != '':
         extra = '?'+urlencode(extra)
 
     return {
@@ -77,10 +77,10 @@ def rpx_embed(extra = None, rpx_response = reverse('django_rpx.views.rpx_respons
     }
 
 @register.inclusion_tag('django_rpx/rpx_url.html')
-def rpx_url(extra = None, rpx_response = reverse('django_rpx.views.rpx_response')):
+def rpx_url(extra = '', rpx_response = reverse('django_rpx.views.rpx_response')):
     current_site = Site.objects.get_current()
 
-    if extra != None:
+    if extra != '':
         extra = '?'+urlencode(extra)
 
     return {

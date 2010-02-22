@@ -27,65 +27,63 @@ TODO:
 
 register = template.Library()
 
-@register.inclusion_tag('django_rpx/rpx_link.html', takes_context=True)
-def rpx_link(context, text, extra = '', rpx_response = reverse('django_rpx.views.rpx_response')):
+def _rpx_common(request, extra = '', rpx_response = False):
+    '''
+    Common code for rpx_* template inclusion tags.
+    '''
     if extra != '':
         extra = '?'+urlencode(extra)
+    if not rpx_response:
+        #This is the default rpx_response that will be used most of the time.
+        #The only time when we don't use this, is when we need to associate
+        #a login, so we end up using a different url.
+        rpx_response = reverse('django_rpx.views.rpx_response')
 
     #Construct the token url:
-    token_url = "http://%s%s%s" % (context['request'].get_host(),
+    token_url = "http://%s%s%s" % (request.get_host(),
                                    rpx_response,
                                    extra)
     return {
-        'text': text,
         'realm': settings.RPXNOW_REALM,
         'token_url': token_url,
     }
 
-@register.inclusion_tag('django_rpx/rpx_script.html')
-def rpx_script(extra = '', rpx_response = reverse('django_rpx.views.rpx_response'), flags = ''):
+
+@register.inclusion_tag('django_rpx/rpx_link.html', takes_context = True)
+def rpx_link(context, text, extra = '', rpx_response = False):
+    #NOTE: We have to manually specify each of the args; can't use *args,
+    #**kwargs.
+    common = _rpx_common(context['request'], extra, rpx_response)
+
+    #Add link text to template var dict
+    common['text'] = text
+
+    return common
+
+@register.inclusion_tag('django_rpx/rpx_script.html', takes_context = True)
+def rpx_script(context, extra = '', rpx_response = False, flags = ''):
     '''
     Arguments to flag will go into the RPXNOW.flags = '' var. A good use case 
     would be to set flags = 'show_provider_list' to force showing all login providers
     even if user is logged in.
     '''
-    current_site = Site.objects.get_current()
+    common = _rpx_common(context['request'], extra, rpx_response)
+    
+    #Add additional template vars
+    common['flags'] = flags
 
-    if extra != '':
-        extra = '?'+urlencode(extra)
+    return common
 
-    return {
-        'realm': settings.RPXNOW_REALM,
-        'token_url': "http://%s%s%s" %(current_site.domain,
-                                       rpx_response,
-                                       extra),
-        'flags': flags,
-    }
 
-@register.inclusion_tag('django_rpx/rpx_embed.html')
-def rpx_embed(extra = '', rpx_response = reverse('django_rpx.views.rpx_response')):
-    current_site = Site.objects.get_current()
+@register.inclusion_tag('django_rpx/rpx_embed.html', takes_context = True)
+def rpx_embed(context, extra = '', rpx_response = False):
+    common = _rpx_common(context['request'], extra, rpx_response)
 
-    if extra != '':
-        extra = '?'+urlencode(extra)
+    return common
 
-    return {
-        'realm': settings.RPXNOW_REALM,
-        'token_url': "http://%s%s%s" %(current_site.domain,
-                                       rpx_response,
-                                       extra)
-    }
 
-@register.inclusion_tag('django_rpx/rpx_url.html')
-def rpx_url(extra = '', rpx_response = reverse('django_rpx.views.rpx_response')):
-    current_site = Site.objects.get_current()
+@register.inclusion_tag('django_rpx/rpx_url.html', takes_context = True)
+def rpx_url(context, extra = '', rpx_response = False):
+    common = _rpx_common(context['request'], extra, rpx_response)
 
-    if extra != '':
-        extra = '?'+urlencode(extra)
-
-    return {
-        'realm': settings.RPXNOW_REALM,
-        'token_url': "http://%s%s%s" %(current_site.domain,
-                                       rpx_response,
-                                       extra)
-    }
+    return common

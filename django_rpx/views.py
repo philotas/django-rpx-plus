@@ -19,7 +19,7 @@ except ImportError:
     import django_messages_framework as messages #backport of messages framework
 
 from django_rpx.models import RpxData
-from django_rpx.forms import RegisterForm, ProfileForm
+from django_rpx.forms import RegisterForm
 
 import re #for sub in register
 
@@ -220,39 +220,3 @@ def associate(request):
                               },
                                   context_instance = RequestContext(request))
 
-def profile(request):
-    #TODO: Should use auth decorator instead of this:
-    if not request.user.is_authenticated() or not request.user.is_active:
-        return HttpResponseRedirect(reverse('auth_login'))
-
-    message = False #A crude hack for displaying success messages
-    if request.method == 'POST':
-        form = ProfileForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            print data
-
-            #Update user with form data
-            request.user.first_name = data['first_name']
-            request.user.last_name = data['last_name']
-            request.user.email = data['email']
-            request.user.save()
-
-            message = 'Successfully updated profile!'
-
-            #Stay on profile page.
-            #return HttpResponse('success')
-    else: 
-        #Try to pre-populate the form with user data.
-        form = ProfileForm(initial = {
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-            'email': request.user.email,
-        })
-
-    return render_to_response('django_rpx/profile.html', {
-                                'form': form,
-                                'message': message,
-                                'user': request.user,
-                              },
-                              context_instance = RequestContext(request))

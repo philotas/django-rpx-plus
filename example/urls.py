@@ -9,7 +9,16 @@ urlpatterns = patterns('',
     # (r'^example/', include('example.foo.urls')),
 
     #url(r'^', include('example.urls')),
+    # Account/Auth URLs not implemented by django_rpx:
+    url(r'^accounts/$', 'django.views.generic.simple.redirect_to', 
+                        {'url': '/accounts/profile/', 'permanent': False},
+                        name='auth_home'),
     url(r'^accounts/profile/$', 'app.views.profile', name='auth_profile'),
+    #We will use django's built in logout view.
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', 
+                      {'template_name': 'registration/logged_out.html'}, 
+                      name='auth_logout'),
+
     # For django_rpx
     (r'^accounts/', include('django_rpx.urls')),
 

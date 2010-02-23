@@ -138,10 +138,6 @@ def associate_rpx_response(request):
     #return HttpResponseRedirect(reverse('auth_associate'))
     return HttpResponseRedirect(destination)
 
-def home(request):
-    return HttpResponseRedirect(reverse('auth_profile'))
-
-#TODO: Just render this template in urls.py
 def login(request):
     next = request.GET.get('next', '/accounts/profile')
     extra = {'next': next}

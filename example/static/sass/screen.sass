@@ -126,34 +126,40 @@ body#login, body#logged_out
       #messages
         margin-top: 10px
 
-body#profile
+body#profile, body#register
   #container
     width: 450px
   #content
-    #user_information
-      p.helper
-        margin-bottom: 15px
-        text-align: center
-      form#profile_form
-        .errorlist
-          +errorlist-style
-        p
-          margin-bottom: 10px
-        label
-          font-size: 0.90em
-          font-weight: bold
-          display: block
-        input[type=text]
-          //Rough way to make text width same as error message.
-          width: 435px
-          font-size: 1.2em
-          padding: 4px 5px
-        .actions
-          text-align: right
-          button
-            font-family: Georgia, Times, Times New Roman, sans-serif
-            font-size: 1.0em
-            padding: 7px 10px
+    p.helper
+      margin-bottom: 15px
+      text-align: center
+    form
+      .errorlist
+        +errorlist-style
+      p
+        margin-bottom: 10px
+      label
+        font-size: 0.90em
+        font-weight: bold
+        display: block
+      input[type=text]
+        //Rough way to make text width same as error message.
+        width: 435px
+        font-size: 1.2em
+        padding: 4px 5px
+      .actions
+        text-align: right
+        button
+          font-family: Georgia, Times, Times New Roman, sans-serif
+          font-size: 1.0em
+          padding: 7px 10px
+    #associate_helper
+      color: #555
+      margin-top: 35px
+      text-align: center
+      small
+        display: block
+        font-size: 0.8em
 
 body#associate
   #container
@@ -187,3 +193,52 @@ body#associate
         margin-bottom: 0
       p.helper
         font-size: 0.8em
+
+body#register2
+  #container
+    width: 450px
+  #content
+    form#register_form
+      display: block
+      margin: 0 auto
+      margin-top: 20px
+      p.helper
+        margin-bottom: 15px
+        text-align: center
+        font-size: 0.9em
+      .field
+        clear: left
+        margin-bottom: 15px
+        padding-top: 10px
+        .errorlist
+          +errorlist-style
+        label
+          float: left
+          margin-right: 16px
+          width: 120px
+          text-align: right
+          font-size: 0.9em
+          //Move the labels slightly down.
+          padding-top: 8px
+        input[type=text]
+          font-size: 1.0em
+          width: 350px
+          padding: 5px
+        input#id_subdomain
+          width: 200px
+          text-align: right
+        #subdomain-input-helper
+          font-size: 1.4em
+        input#id_title
+          width: 380px
+      button
+        display: block
+        margin-top: 20px
+        margin-left: auto
+        margin-right: 8pxThe Case For An Older Woman
+        font-family: Georgia, Times, Times New Roman, sans-serif
+        font-size: 1.2em
+        padding-top: 5px
+        padding-bottom: 5px
+        width: 150px
+

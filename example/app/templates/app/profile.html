@@ -23,17 +23,14 @@
 </div>
 {% endif %}
 
+<p class="helper">This is what people will see on your public profile page. You
+can also <a href="{% url auth_associate %}">manage your logins &raquo</a></p>
 
-<div id="user_information">
-    <p class="helper">This is what people will see on your public profile page. You
-    can also <a href="{% url auth_associate %}">manage your logins &raquo</a></p>
-
-    <form action="" method="post" name="profile_form" id="profile_form">
-        {{ form.as_p }}
-        <div class="actions">
-            <button type="submit" name="submit" value="Save">Update Profile &raquo;</button>
-        </div>
-    </form>
-</div>
+<form action="" method="post" name="profile_form" id="profile_form">
+    {{ form.as_p }}
+    <div class="actions">
+        <button type="submit" name="submit" value="Save">Update Profile &raquo;</button>
+    </div>
+</form>
 
 {% endblock %}

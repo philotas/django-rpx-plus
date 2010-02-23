@@ -1,4 +1,12 @@
 # Django settings for example project.
+import os
+import django
+
+# For setting relative paths. See: http://tinyurl.com/adsa3k
+# Path of Django framework files (no trailing /):
+DJANGO_ROOT = os.path.dirname(os.path.realpath(django.__file__))
+# Path of this "site" (no trailing /):
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 # There might be a better way to determine messages framework without actually
 # importing it. Maybe check django.VERSION? (but that wouldn't work well for
@@ -45,12 +53,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = '/static/'
+MEDIA_ROOT = os.path.join(SITE_ROOT, 'static')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/static'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -105,7 +113,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     #'django.core.context_processors.auth',
     #'django.core.context_processors.debug',
     #'django.core.context_processors.i18n',
-    #'django.core.context_processors.media',
+    'django.core.context_processors.media', #for MEDIA_URL template var
     'django.core.context_processors.request', #includes request in RequestContext
     #'django_messages_framework.context_processors.messages', #backport of dev
 ]

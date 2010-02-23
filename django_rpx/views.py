@@ -1,8 +1,7 @@
 from django.conf import settings
 import django.contrib.auth as auth
-from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
@@ -48,7 +47,7 @@ def rpx_response(request):
             if user.is_active:
                 #login creates session for the user.
                 auth.login(request, user)
-                return HttpResponseRedirect(destination)
+                return redirect(destination)
             else:
                 #User is not active. There is a possibility that the user is new
                 #and needs to be registered/associated. We check that here. First,
@@ -64,8 +63,8 @@ def rpx_response(request):
                         #associated to an account!
                         #TODO: Make sure we really need to login here...
                         auth.login(request, user)
-                        return HttpResponseRedirect(settings.REGISTER_URL+\
-                                                    '?next='+destination)
+                        return redirect(settings.REGISTER_URL+\
+                                        '?next='+destination)
                 except RpxData.DoesNotExist:
                     #Do nothing, auth has failed.
                     pass
@@ -76,7 +75,7 @@ def rpx_response(request):
     #Set success message.
     messages.error(request, 'There was an error in signing you in. Try again?')
     destination = urlencode({'next': destination})
-    return HttpResponseRedirect(reverse('auth_login')+'?'+destination)
+    return redirect(reverse('auth_login')+'?'+destination)
 
 def associate_rpx_response(request):
     #See if a redirect param is specified. params are sent via both POST and
@@ -118,7 +117,7 @@ def associate_rpx_response(request):
                     messages.success(request, 'We successfully associated your new login with this account!')
                     
                     #The destination is most likely /accounts/associate/
-                    return HttpResponseRedirect(destination)
+                    return redirect(destination)
                 except RpxData.DoesNotExist:
                     #Shouldn't happen since we needed to store the rpx data in
                     #order to auth the user.
@@ -135,8 +134,7 @@ def associate_rpx_response(request):
         messages.error(request, 'Unsuccessful login. Try again?')
 
     #Getting here means that the 
-    #return HttpResponseRedirect(reverse('auth_associate'))
-    return HttpResponseRedirect(destination)
+    return redirect(destination)
 
 def login(request):
     next = request.GET.get('next', '/accounts/profile')
@@ -174,7 +172,7 @@ def register(request):
             user_rpxdata.is_associated = True
             user_rpxdata.save()
 
-            return HttpResponseRedirect(destination)
+            return redirect(destination)
     else: 
         #Try to pre-populate the form with data gathered from the RPX login.
         try:
@@ -200,7 +198,7 @@ def register(request):
 
 def associate(request):
     if not request.user.is_authenticated() or not request.user.is_active:
-        return HttpResponseRedirect(reverse('auth_login'))
+        return redirect('auth_login')
 
     #Get associated accounts
     user_rpxdatas = RpxData.objects.filter(user = request.user)
@@ -219,7 +217,7 @@ def associate(request):
 def delete_associated_login(request, rpxdata_id):
     #TODO: Should use auth decorator instead of this:
     if not request.user.is_authenticated() or not request.user.is_active:
-        return HttpResponseRedirect(reverse('auth_login'))
+        return redirect('auth_login')
 
     #Check to see if the rpxdata_id exists and is associated with this user
     try:
@@ -238,4 +236,4 @@ def delete_associated_login(request, rpxdata_id):
         #yet.
         pass
 
-    return HttpResponseRedirect(reverse('auth_associate'))
+    return redirect('auth_associate')

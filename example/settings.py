@@ -1,5 +1,15 @@
 # Django settings for example project.
 
+# There might be a better way to determine messages framework without actually
+# importing it. Maybe check django.VERSION? (but that wouldn't work well for
+# trunk, I think)
+BUILT_IN_MESSAGES_FRAMEWORK = False
+try:
+    import django.contrib.messages.context_processors.messages
+    BUILT_IN_MESSAGES_FRAMEWORK = True
+except ImportError:
+    pass
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -57,11 +67,15 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-)
+]
+if BUILT_IN_MESSAGES_FRAMEWORK:
+    MIDDLEWARE_CLASSES.append('django.contrib.messages.middleware.MessageMiddleware')
+else:
+    MIDDLEWARE_CLASSES.append('django_messages_framework.middleware.MessageMiddleware')
 
 ROOT_URLCONF = 'example.urls'
 
@@ -71,14 +85,18 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'app', #This is our app. Ideally, this would be named better.
     'django_rpx', #Put this after our app with template overrides.
-)
+]
+if BUILT_IN_MESSAGES_FRAMEWORK:
+    INSTALLED_APPS.append('django.contrib.messages')
+else:
+    INSTALLED_APPS.append('django_messages_framework')
 
 # Template context processors do not appear in settings file by default. But we
 # require the request context_processor and the message framework also has a
@@ -91,13 +109,9 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.request', #includes request in RequestContext
     #'django_messages_framework.context_processors.messages', #backport of dev
 ]
-# There might be a better way to determine messages framework without actually
-# importing it. Maybe check django.VERSION? (but that wouldn't work well for
-# trunk, I think)
-try:
-    import django.contrib.messages.context_processors.messages
+if BUILT_IN_MESSAGES_FRAMEWORK:
     TEMPLATE_CONTEXT_PROCESSORS.append('django.contrib.messages.context_processors.messages')
-except ImportError:
+else:
     TEMPLATE_CONTEXT_PROCESSORS.append('django_messages_framework.context_processors.messages')
 
 # Auth backend config tuple does not appear in settings file by default. So we
@@ -107,7 +121,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend', #default django auth
 )
 
-
 # Here are some settings related to auth urls. django has default values for them
 # as specified on page: http://docs.djangoproject.com/en/dev/ref/settings/. You
 # can override them if you like.
@@ -115,6 +128,17 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_REDIRECT_URL = '' #default: '/accounts/profile/'
 LOGIN_URL = '' #default: '/accounts/login/'
 LOGOUT_URL = '' #default: '/accounts/logout/'
+
+########################################
+# django messages framework settings:  #
+########################################
+
+#First uses CookieStorage for all messages, falling back to using
+#SessionStorage for the messages that could not fit in a single cookie.
+if BUILT_IN_MESSAGES_FRAMEWORK:
+    MESSAGE_STORAGE = 'django.contrib.messages.storage.fallback.FallbackStorage'
+else:
+    MESSAGE_STORAGE = 'django_messages_framework.storage.fallback.FallbackStorage'
 
 #######################
 #django_rpx settings: #

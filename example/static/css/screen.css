@@ -30,12 +30,12 @@ body #header ul li { list-style-type: none; margin-left: 0px; white-space: nowra
 body #header ul li.first { padding-left: 0px; }
 body #header ul li.last { padding-right: 0px; }
 
-body#login { background: #ccc; }
-body#login #header, body#login #footer { display: none; }
-body#login #content #login_box { margin: 0 auto; padding: 20px; width: 400px; border: 2px solid #999; background: #fff; text-align: center; }
-body#login #content #login_box h2 { font-size: 1.8em; margin-bottom: 10px; }
-body#login #content #login_box h2 a { color: #333; text-decoration: none; }
-body#login #content #login_box #messages { margin-top: 10px; }
+body#login, body#logged_out { background: #ccc; }
+body#login #header, body#login #footer, body#logged_out #header, body#logged_out #footer { display: none; }
+body#login #content #login_box, body#logged_out #content #login_box { margin: 0 auto; padding: 20px; width: 400px; border: 2px solid #999; background: #fff; text-align: center; }
+body#login #content #login_box h2, body#logged_out #content #login_box h2 { font-size: 1.8em; margin-bottom: 10px; }
+body#login #content #login_box h2 a, body#logged_out #content #login_box h2 a { color: #333; text-decoration: none; }
+body#login #content #login_box #messages, body#logged_out #content #login_box #messages { margin-top: 10px; }
 
 body#profile #container { width: 450px; }
 body#profile #content #user_information p.helper { margin-bottom: 15px; text-align: center; }

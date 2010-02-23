@@ -19,7 +19,7 @@ urlpatterns = patterns('',
     url(r'^accounts/profile/$', 'app.views.profile', name='auth_profile'),
     #We will use django's built in logout view.
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', 
-                      {'template_name': 'registration/logged_out.html'}, 
+                      {'template_name': 'django_rpx/logged_out.html'}, 
                       name='auth_logout'),
 
     # For django_rpx

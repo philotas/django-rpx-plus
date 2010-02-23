@@ -110,7 +110,7 @@ else:
 # require the request context_processor and the message framework also has a
 # context processor. So both are added here:
 TEMPLATE_CONTEXT_PROCESSORS = [
-    #'django.core.context_processors.auth',
+    'django.core.context_processors.auth', #for user template var
     #'django.core.context_processors.debug',
     #'django.core.context_processors.i18n',
     'django.core.context_processors.media', #for MEDIA_URL template var

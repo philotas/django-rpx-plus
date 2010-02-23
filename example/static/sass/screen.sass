@@ -8,10 +8,32 @@
 //My imports:
 //@import compass/utilities/general.sass
 //@import compass/utilities/text.sass
-//@import compass/utilities/links.sass
-//@import compass/utilities/lists.sass
+@import compass/utilities/links.sass
+@import compass/utilities/lists.sass
 //@import compass/utilities/tables.sass
 //@import compass/layout.sass
+
+//Our own styles
+=error-style
+  text-align: center
+  padding-top: 5px
+  padding-bottom: 4px
+  background-color: #c44
+  //background-color: #999
+  font-weight: bold
+  color: white
+  //We can't have any margin-bottom since that'll put a gap between the error bar
+  //and the userbox.
+
+=errorlist-style
+  +error-style
+  +no-bullets
+  margin-left: 0
+  margin-bottom: 5px  
+  width: 100%
+  font-size: 0.8em
+  background-color: #fdd
+  color: #c44
 
 //We use this with the new messages framework.
 =messages-style
@@ -24,7 +46,7 @@
     list-style-position: inside
     margin: 0
     li
-      padding: 3px 20px 2px
+      padding: 4px 20px 3px
       margin-bottom: 4px
     .success
       background-color: #cfc
@@ -41,28 +63,35 @@ body
   //Default font-size:
   font-size: 1.1em
   font-family: Georgia, Times, Times New Roman, sans-serif
+  a
+    +hover-link
 
   #container
     //+container
+    margin: 0 auto
+    width: 550px
   #messages
     +messages-style 
 
-  //#header
-  //  margin-top: 10px
-  //  margin-bottom: 10px
-  //  text-align: right
-  //  h1
-  //    margin-left: 5px
-  //    font-size: 1.2em
-  //    float: left
-  //    margin-bottom: 0
-  //    //Hackish method of correcting blueprint set line-height:
-  //    line-height: 1.5
-  //    a
-  //      color: #333
-  //      text-decoration: none
-  //      .supple
-  //        color: #555
+  #header
+    margin-top: 10px
+    margin-bottom: 20px
+    text-align: right
+    h1
+      font-size: 2.2em
+      float: left
+      margin-bottom: 0
+      //Hackish method of correcting blueprint set line-height:
+      line-height: 1.5
+      a
+        color: #333
+        text-decoration: none
+    ul
+      font-size: 0.9em
+      margin-bottom: 0
+      +horizontal-list
+      padding-top: 25px
+      padding-left: 20px
   //#content
   //  padding: 5px
 
@@ -96,3 +125,32 @@ body#login
           text-decoration: none
       #messages
         margin-top: 10px
+
+body#profile
+  #container
+    width: 450px
+  #content
+    #user_information
+      p.helper
+        margin-bottom: 15px
+        text-align: center
+      form#profile_form
+        .errorlist
+          +errorlist-style
+        p
+          margin-bottom: 10px
+        label
+          font-size: 0.90em
+          font-weight: bold
+          display: block
+        input[type=text]
+          //Rough way to make text width same as error message.
+          width: 435px
+          font-size: 1.2em
+          padding: 4px 5px
+        .actions
+          text-align: right
+          button
+            font-family: Georgia, Times, Times New Roman, sans-serif
+            font-size: 1.0em
+            padding: 7px 10px

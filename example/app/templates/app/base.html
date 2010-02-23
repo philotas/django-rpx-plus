@@ -25,6 +25,14 @@
 <div id="header">
 {% block header %}
     <h1><a href="{% url home %}">Example App</a></h1>
+    <ul>
+        <li><a href="{% url auth_profile %}">Profile</a></li>
+        {% if user.is_authenticated %}
+        <li><a href="{% url auth_logout %}">Logout</a></li>
+        {% else %}
+        <li><a href="{% url auth_login %}">Logout</a></li>
+        {% endif %}
+    </ul>
 {% endblock %}
 </div>
 
@@ -35,7 +43,6 @@
 
 <div id="footer">
 {% block footer %}
-    a product of <a href="http://www.supplelabs.com">supple labs</a>
 {% endblock %}
 </div>
 

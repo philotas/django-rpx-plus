@@ -12,12 +12,23 @@ table { margin: 0; padding: 0; border: 0; font-weight: inherit; font-style: inhe
 a img { border: none; }
 
 body { font-size: 1.1em; font-family: Georgia, Times, Times New Roman, sans-serif; }
+body a { text-decoration: none; }
+body a:hover { text-decoration: underline; }
+body #container { margin: 0 auto; width: 550px; }
 body #messages { font-size: 0.9em; margin-top: 5px; margin-bottom: 5px; }
 body #messages ul { list-style-position: inside; margin: 0; }
-body #messages ul li { padding: 3px 20px 2px; margin-bottom: 4px; }
+body #messages ul li { padding: 4px 20px 3px; margin-bottom: 4px; }
 body #messages ul .success { background-color: #cfc; }
 body #messages ul .error { background-color: #fdd; }
 body #messages ul .info { background-color: #adf; }
+body #header { margin-top: 10px; margin-bottom: 20px; text-align: right; }
+body #header h1 { font-size: 2.2em; float: left; margin-bottom: 0; line-height: 1.5; }
+body #header h1 a { color: #333; text-decoration: none; }
+body #header ul { font-size: 0.9em; margin-bottom: 0; margin: 0; padding: 0; border: 0; outline: 0; overflow: hidden; display: inline-block; padding-top: 25px; padding-left: 20px; }
+body #header ul { display: block; }
+body #header ul li { list-style-type: none; margin-left: 0px; white-space: nowrap; display: inline; float: left; padding-left: 4px; padding-right: 4px; }
+body #header ul li.first { padding-left: 0px; }
+body #header ul li.last { padding-right: 0px; }
 
 body#login { background: #ccc; }
 body#login #header, body#login #footer { display: none; }
@@ -25,3 +36,13 @@ body#login #content #login_box { margin: 0 auto; padding: 20px; width: 400px; bo
 body#login #content #login_box h2 { font-size: 1.8em; margin-bottom: 10px; }
 body#login #content #login_box h2 a { color: #333; text-decoration: none; }
 body#login #content #login_box #messages { margin-top: 10px; }
+
+body#profile #container { width: 450px; }
+body#profile #content #user_information p.helper { margin-bottom: 15px; text-align: center; }
+body#profile #content #user_information form#profile_form .errorlist { text-align: center; padding-top: 5px; padding-bottom: 4px; background-color: #c44; font-weight: bold; color: white; margin-left: 0; margin-bottom: 5px; width: 100%; font-size: 0.8em; background-color: #fdd; color: #c44; }
+body#profile #content #user_information form#profile_form .errorlist li { list-style-type: none; margin-left: 0px; }
+body#profile #content #user_information form#profile_form p { margin-bottom: 10px; }
+body#profile #content #user_information form#profile_form label { font-size: 0.90em; font-weight: bold; display: block; }
+body#profile #content #user_information form#profile_form input[type=text] { width: 435px; font-size: 1.2em; padding: 4px 5px; }
+body#profile #content #user_information form#profile_form .actions { text-align: right; }
+body#profile #content #user_information form#profile_form .actions button { font-family: Georgia, Times, Times New Roman, sans-serif; font-size: 1.0em; padding: 7px 10px; }

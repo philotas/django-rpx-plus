@@ -1,96 +1,39 @@
-{% extends "django_rpx/base.html" %}
+{% extends "app/base.html" %}
 
 {% block bodyid %}profile{% endblock %}
-{% block title %}Account Profile{% endblock %}
+{% block title %}Account Profile - Example App{% endblock %}
 
-{% block extracss %}
-<style type="text/css">
-    #container {
-        width: 500px;
-        margin: 5px auto;
-    }
-    #header {
-        text-align: center;
-    }
-    #content #helper {
-        text-align: center;
-    }
-    #content #message {
-        text-align: center;
-        padding: 5px 4px;
-        border: 2px solid #390;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-    #content #errors {
-        text-align: center;
-        padding: 5px 4px;
-        border: 2px solid #e2451c;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-    #content #profile_form {
-        display: block;
-        margin: 0 auto;
-        /*border: 1px solid #ccc;*/
-        width: 300px;
-        padding: 10px;
-    }
-    #content #profile_form .errorlist {
-        list-style-type: none;
-        padding: 5px;
-        border: 2px solid #e2451c;
-    }
-    #content #profile_form .errorlist li {
-    }
-    #content #profile_form p {
-        margin-top: 5px;
-    }
-    #content #profile_form label {
-        display: block;
-    }
-    #content #profile_form input {
-        display: block;
-        font-size: 1.2em;
-        width: 98%;
-    }
-    #content #profile_form button {
-        display: block;
-        margin-left: auto;
-        font-size: 1.2em;
-        width: 30%;
-    }
-
-</style>
-{% endblock %}
-
-{% block header %}
-    <h1>Account Profile</h1>
+{% block javascript %}
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
-    <p id="helper">
-    </p>
 
-    {% if message %}
-    <div id="message">
-        {{ message }}
-    </div>
-    {% endif %}
+{% if messages %}
+<div id="messages">
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 
-    {% if form.errors %}
-    <div id="errors">
-        Please correct the error{{form.errors|pluralize }} below.
-    </div>
-    {% endif %}
-    
+
+<div id="user_information">
+    <p class="helper">This is what people will see on your public profile page. You
+    can also <a href="{% url auth_associate %}">manage your logins &raquo</a></p>
+
     <form action="" method="post" name="profile_form" id="profile_form">
         {{ form.as_p }}
-        <button type="submit" name="submit" value="Save">Save</button>
+        <div class="actions">
+            <button type="submit" name="submit" value="Save">Update Profile &raquo;</button>
+        </div>
     </form>
-    
-    <p id="helper">
-    <a href="{% url auth_associate %}">View and manage associated logins &raquo;</a>
-    </p>
+</div>
 
 {% endblock %}

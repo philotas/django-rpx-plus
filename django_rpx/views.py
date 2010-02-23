@@ -216,3 +216,26 @@ def associate(request):
                               },
                                   context_instance = RequestContext(request))
 
+def delete_associated_login(request, rpxdata_id):
+    #TODO: Should use auth decorator instead of this:
+    if not request.user.is_authenticated() or not request.user.is_active:
+        return HttpResponseRedirect(reverse('auth_login'))
+
+    #Check to see if the rpxdata_id exists and is associated with this user
+    try:
+        #We only allow deletion if user has more than one login
+        num_logins = RpxData.objects.filter(user = request.user).count()
+        if num_logins > 1:
+            r = RpxData.objects.get(id = rpxdata_id, user = request.user)
+
+            #Set success message.
+            messages.success(request, 'Your '+r.provider+' login was successfully deleted.')
+
+            #Actually delete
+            r.delete()
+    except RpxData.DoesNotExist:
+        #Silent error, just redirect since message framework can't handle errors
+        #yet.
+        pass
+
+    return HttpResponseRedirect(reverse('auth_associate'))

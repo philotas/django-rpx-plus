@@ -46,3 +46,14 @@ body#profile #content #user_information form#profile_form label { font-size: 0.9
 body#profile #content #user_information form#profile_form input[type=text] { width: 435px; font-size: 1.2em; padding: 4px 5px; }
 body#profile #content #user_information form#profile_form .actions { text-align: right; }
 body#profile #content #user_information form#profile_form .actions button { font-family: Georgia, Times, Times New Roman, sans-serif; font-size: 1.0em; padding: 7px 10px; }
+
+body#associate #container { width: 450px; }
+body#associate #content #associated_logins { font-size: 0.9em; }
+body#associate #content #associated_logins p.helper { margin-bottom: 15px; text-align: center; }
+body#associate #content #associated_logins dl { margin-bottom: 10px; }
+body#associate #content #associated_logins dl dt { float: left; width: 70px; text-align: right; margin-right: 10px; margin-top: 5px; }
+body#associate #content #associated_logins dl dd input[type=text] { width: 300px; font-size: 0.9em; padding: 4px 5px; }
+body#associate #content #associated_logins dl dd a { font-size: 0.7em; }
+body#associate #content #add_login { text-align: center; margin-top: 15px; }
+body#associate #content #add_login p { margin-bottom: 0; }
+body#associate #content #add_login p.helper { font-size: 0.8em; }

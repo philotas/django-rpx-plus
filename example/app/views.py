@@ -31,10 +31,7 @@ def profile(request):
             request.user.email = data['email']
             request.user.save()
 
-            message = 'Successfully updated profile!'
-
-            #Stay on profile page.
-            #return HttpResponse('success')
+            messages.success(request, 'Successfully updated profile!')
     else: 
         #Try to pre-populate the form with user data.
         form = ProfileForm(initial = {
@@ -45,7 +42,6 @@ def profile(request):
 
     return render_to_response('app/profile.html', {
                                 'form': form,
-                                'message': message,
                                 'user': request.user,
                               },
                               context_instance = RequestContext(request))

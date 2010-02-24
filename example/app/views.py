@@ -16,6 +16,12 @@ from .forms import ProfileForm
 
 @login_required
 def profile(request):
+    '''
+    Displays page where user can update their profile.
+    
+    @param request: Django request object.
+    @return: Rendered profile.html.
+    '''
     if request.method == 'POST':
         form = ProfileForm(request.POST)
         if form.is_valid():

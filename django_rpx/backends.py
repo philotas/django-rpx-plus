@@ -18,7 +18,23 @@ class RpxBackend:
         except User.DoesNotExist:
             return None
 
-    def authenticate(self, token = ''):
+    def authenticate(self, token):
+        '''
+        Called by views.rpx_response. Takes a token (a hash that was sent by
+        RPX when user logged in through the service) and uses it to query 
+        RPX's auth_info API to verify that the user logged in successfully and
+        to get additional user data (the user's profile). Then returns a User
+        object if the RPX login is associated to one (considered successful
+        authentication), returns a RpxData object if the RPX login is NOT
+        associated to any User object (the user needs to register), or returns
+        None if unsuccessful RPX login.
+
+        @type token: string
+        @param token: RPX provided hash used for auth_info API call.
+        @return: User obj if successful login and user is registered.
+                 RpxData obj if successful login but user is NOT registered.
+                 None if error.
+        '''
         #As detailed on https://rpxnow.com/docs#api, we send query RPX's API
         #URL to obtain auth_info.
         args = {

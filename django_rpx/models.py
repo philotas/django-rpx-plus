@@ -2,30 +2,25 @@ from django.db import models
 from picklefield.fields import PickledObjectField
 
 class RpxData(models.Model):
-    #The User field can be null if the user has logged in but did not 
-    #register an account (thus creating aan associated User object).
-    user = models.ForeignKey('auth.User', null = True)
-
-    #Flag that specifies whether the Rpx login has been associated with a User
-    #yet. It is used, in conjunction with User.is_active = False, to redirect
-    #the user to a 'register' page.
-    #TODO: Don't need this anymore.
-    #is_associated = models.BooleanField(default = False)
-
-    #Maybe we should go back to using TextField for identifier? We are
-    #assuming that it'll always be a URL...
+    #Primary key field is automatically created.
+    
+    #The RPX identifier is essentially an OpenID URL.
     identifier = models.URLField(unique = True, verify_exists = False,
                                  max_length = 255)
+    #The name of the auth provider (eg. Google, Twitter, Facebook, etc.).
     provider = models.CharField(max_length = 255)
     
-    #Since the profile can contain any number of fields and since this
-    #information is rarely accessed anyway, we'll just pickle the DICTIONARY
-    #and store it in db.
+    #The User field can be null if the user has logged in but did not 
+    #register an account (thus creating an associated User object).
+    user = models.ForeignKey('auth.User', null = True)
+    
+    #We pickle and store the profile dict because: 1) We only have a 10 min
+    #window where we can grab user info data from RPX after auth. So there may
+    #be times when we want to access extra user data but don't feel like making
+    #the user login again. 2) The profile can contain any number of fields and 
+    #not all of them are guaranteed. So it's messy to create a table for each of
+    #the fields, especially since we will rarely access this data anyway.
     profile = PickledObjectField()
-
-    # class Admin:
-    #     list_display = ('',)
-    #     search_fields = ('',)
 
     def __unicode__(self):
         return u"RPX identifier is %s" % self.identifier

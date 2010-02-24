@@ -1,109 +1,94 @@
-from django.http import HttpResponseRedirect, HttpResponseForbidden
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from django_rpx.models import RpxData
 from django.conf import settings
+#The reason why we use django's urlencode instead of urllib's urlencode is that
+#django's version can operate on unicode strings.
+from django.utils.http import urlencode
+from django.utils import simplejson
 
-import hashlib #encryption (MD5)
-import time #for seeding
+from django_rpx.models import RpxData
 
-TRUSTED_PROVIDERS=set(getattr(settings,'RPX_TRUSTED_PROVIDERS', []))
+import urllib2
+
+RPX_API_AUTH_URL = 'https://rpxnow.com/api/v2/auth_info'
 
 class RpxBackend:
-    def get_user(self, id):
-        try:
-            return User.objects.get(id=id)
-        except User.DoesNotExist:
-            return None
-
-    def get_user_by_rpx_id(self, rpx_id):
-        try:
-            rd = RpxData.objects.get(identifier = rpx_id)
-        except RpxData.DoesNotExist:
-            return None
-        return rd.user
-
-    def authenticate(self, token=''):
-        """
-        TODO: pass in a message array here which can be filled with an error
-        message with failure response
-        """
-        from django.utils import simplejson
-        import urllib
-        import urllib2
-
-        url = 'https://rpxnow.com/api/v2/auth_info'
+    def authenticate(self, token = ''):
+        #As detailed on https://rpxnow.com/docs#api, we send query RPX's API
+        #URL to obtain auth_info.
         args = {
-          'format': 'json',
-          'apiKey': settings.RPXNOW_API_KEY,
-          'token': token
+            'format': 'json',
+            'apiKey': settings.RPXNOW_API_KEY,
+            'token': token, #only valid for 10 min
         }
-        r = urllib2.urlopen(url=url,
-          data=urllib.urlencode(args),
-        )
-        json = simplejson.load(r)
+        #Send and get data from RPX API:
+        try:
+            response = urllib2.urlopen(url = RPX_API_AUTH_URL, data = urlencode(args))
+        except urllib2.URLError:
+            #Means we couldn't open the url for some reason.
+            #TODO: Provide good error message.
+            return None
 
-        #Login is successful ONLY if stat == 'ok'
-        if json['stat'] != 'ok':
+        #Parse the JSON response:
+        try:
+            response = simplejson.load(response)
+        except ValueError:
+            #JSON couldn't be decoded
+            #TODO: Provide good error message.
+            return None
+
+        #Check the status of the response, Login is successful ONLY if stat == 'ok'. 
+        if response['stat'] != 'ok':
             #TODO: Check for why we have failure. See https://rpxnow.com/docs
             #      for the error codes.
             return None
+
         #At this point, we assume that the RPX authentication has been
-        #successful. So no matter what, we will return a User object.
+        #successful. If the user has already been registered, then we return
+        #the User object. If the user is not registered, then we return an
+        #RpxData object instead. We leave it up to the view to handle 
+        #registration.
         
-        #We can obtain user information for as long as the token is active
-        #(which is 10 minutes). Since token has a short life-time, it's a good
-        #idea to grab user information now and store it in database.
-        #IDEA: Since we can have so much data that can be returned, we
-        #shouldn't limit to a few fixed fields. We can either use a key-value
-        #type store in a db table to store everything, or just store the
-        #identifier and pass everything else off to a user defined function for
-        #handling the extra data.
-        profile = json['profile']
-        rpx_id = profile['identifier'] #guaranteed
-        provider = profile['providerName'] #guaranteed
-
-        user = self.get_user_by_rpx_id(rpx_id)
+        #All of user's information is contained in 'profile', which is a
+        #dictionary of fields forming the user's profile. The keys of the
+        #profile fields can be found here: https://rpxnow.com/docs#profile_data
+        rpx_profile = response['profile']
+        #There are two fields that are guaranteed to be returned for every login
+        #so we pull them out for clarity. rpx_identifier is unique for every user
+        #so we use as our database key for lookups.
+        rpx_identifier = rpx_profile['identifier'] #An OpenID URL
+        rpx_provider = rpx_profile['providerName']
         
-        if not user:
-            #No match, create a new user. We put in a dummy username.
-            md5 = hashlib.md5()
-            username = ''
-            email = profile.get('email', '') #default to ''
-            try:
-                while True:
-                    #Generate an md5 hash from time. We'll use this as our
-                    #dummy username for now until user changes it.
-                    md5.update(str(time.time())) #seeded with time
-                    username = md5.hexdigest()
-                    username = username[:30] #User.username max_length = 30
-                    User.objects.get(username = username)
-            except User.DoesNotExist:
-                #available name!
-                user = User.objects.create_user(username, email)
-        
-            #Since this is a new user, we do not active the user until the Rpx
-            #login has been registered or have been really associated with the
-            #new user account.
-            user.is_active = False
-
-            # Store the original nickname for display
-            # TODO: We'll move this to the new user function/view
-            # user.first_name = nickname
-            user.save()
-
+        #See if this RPX identifier already exists in our RpxData database. 
+        try:
+            rd = RpxData.objects.get(identifier = rpx_identifier)
+            #If user doesn't exist, rd.user will be None.
+            if rd.user == None:
+                #This means that the user has logged in before but never 
+                #registered (ie. created a User object). We refresh the 
+                #RpxData object with returned profile information. Then
+                #return the RpxData object so that view can handle 
+                #registration.
+                rd.profile = rpx_profile
+                rd.save()
+                return rd
+        except RpxData.DoesNotExist:
+            #If the returned RPX data does not exist in DB, that means this is
+            #the first time the user signed into this site. Thus, the user has
+            #not registered either. Let's save the login data:
             rd = RpxData()
-            rd.user = user
-            rd.identifier = rpx_id
-            rd.provider = provider
+            rd.identifier = rpx_identifier
+            rd.provider = rpx_provider
+            rd.profile = rpx_profile
             rd.save()
+            
+            #We return the RpxData object so that the view can handle
+            #registering the user.
+            return rd
         
-        #Get associated RPX data and update it with our new provided data.
-        #NOTE: Since our RPX table is now a one-to-many model (mapping one
-        #user to many RPX datapoints), we need to think about how our user
-        #data (non-identifier) is stored. The below is just a quick hack:
-        rd = RpxData.objects.get(identifier = rpx_id)
-        rd.profile = profile
+        #Getting here means that user has successfully logged in AND has 
+        #previously registered (since we found a User object corresponding
+        #to the RpxData object). So we refresh the user's profile with
+        #data from RPX, then return the User object.
+        rd.profile = rpx_profile
         rd.save()
 
-        return user
+        return rd.user

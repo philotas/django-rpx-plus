@@ -37,6 +37,7 @@ def rpx_response(request):
         token = request.POST.get('token', False)
         if token: 
             user = auth.authenticate(token = token)
+            #TODO: Use type(user) == User or RpxData to check.
             if user:
                 #Getting here means that the user logged in successfully.
                 #However, we two cases: 

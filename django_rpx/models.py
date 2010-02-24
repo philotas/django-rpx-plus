@@ -2,19 +2,15 @@ from django.db import models
 from picklefield.fields import PickledObjectField
 
 class RpxData(models.Model):
-    """holds bonus info about the user
-    some of this this could alternately be implemented by using the rpx
-    mapping api. but that requires more network traffic and still doesn't
-    provide a place to stash all the user metadata.
-    """
-    #Below could be a foreignKey if we wish to associate many profiles with the
-    #user. hm.
-    user = models.ForeignKey("auth.User")
+    #The User field can be null if the user has logged in but did not 
+    #register an account (thus creating aan associated User object).
+    user = models.ForeignKey('auth.User', null = True)
 
     #Flag that specifies whether the Rpx login has been associated with a User
     #yet. It is used, in conjunction with User.is_active = False, to redirect
     #the user to a 'register' page.
-    is_associated = models.BooleanField(default = False)
+    #TODO: Don't need this anymore.
+    #is_associated = models.BooleanField(default = False)
 
     #Maybe we should go back to using TextField for identifier? We are
     #assuming that it'll always be a URL...
@@ -32,5 +28,5 @@ class RpxData(models.Model):
     #     search_fields = ('',)
 
     def __unicode__(self):
-        return u"RpxUserData for %s" % self.user.username
+        return u"RPX identifier is %s" % self.identifier
         

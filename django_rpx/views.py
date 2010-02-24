@@ -49,7 +49,7 @@ def rpx_response(request):
             #TODO: Use type(user) == User or RpxData to check.
             if type(response) == User:
                 #Successful auth and user is registered so we login user.
-                auth.login(request, user)
+                auth.login(request, response)
                 return redirect(destination)
             elif type(response) == RpxData:
                 #Successful auth, but user is NOT registered! So we redirect
@@ -59,6 +59,14 @@ def rpx_response(request):
                 #primary ID. After the user has been registered, this session
                 #var will be removed.
                 request.session[RPX_ID_SESSION_KEY] = response.id
+                #For security purposes, there could be a case where user 
+                #decides not to register but then never logs out either. 
+                #Another person can come along and then use the REGISTER_URL
+                #to continue creating the account. So we expire this session
+                #after a set time interval. (Note that this session expiry
+                #setting will be cleared when user completes registration.)
+                request.session.set_expiry(60 * 10) #10 min
+
                 query_params = urlencode({'next': destination})
                 return redirect(settings.REGISTER_URL+'?'+query_params)
             else:
@@ -131,7 +139,7 @@ def associate_rpx_response(request):
     return redirect(destination)
 
 def login(request):
-    next = request.GET.get('next', '/accounts/profile')
+    next = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
     extra = {'next': next}
 
     return render_to_response('django_rpx/login.html', {
@@ -140,50 +148,59 @@ def login(request):
                               context_instance = RequestContext(request))
 
 def register(request):
-    if request.method == 'POST':
-        #See if a redirect param is specified. If not, we will default to
-        #LOGIN_REDIRECT_URL.
-        try:
-            destination = request.GET['next']
-            if destination.strip() == '':
-                raise KeyError
-        except KeyError:
-            destination = settings.LOGIN_REDIRECT_URL
+    #See if a redirect param is specified. If not, we will default to
+    #LOGIN_REDIRECT_URL.
+    next = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
 
+    #In order to use register, user MUST have the session var RPX_ID_SESSION_KEY
+    #set to the user's RpxData object. This indicates that the user has
+    #successfully logged in via RPX but has not previously registered.
+    try:
+        rpxdata_id = request.session[RPX_ID_SESSION_KEY]
+        #Check to see if this id exists
+        rd = RpxData.objects.get(id = rpxdata_id)
+    except (KeyError, RpxData.DoesNotExist):
+        return redirect(next)
+    
+    #Check form submission.
+    if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            print data
+            #print data
+            
+            #We create the new user object and associate it with our RpxData
+            #object:
+            u = User()
+            u.username = data['username']
+            u.email = data['email']
+            u.save()
 
-            #Now modify the "dummy" user we created with the new values
-            request.user.username = data['username']
-            request.user.email = data['email']
-            request.user.is_active = True
-            request.user.save()
-            #Also, indicate in the user associated RpxData that the login has
-            #been associated with a username.
-            user_rpxdata = RpxData.objects.get(user = request.user)
-            user_rpxdata.is_associated = True
-            user_rpxdata.save()
+            rd.user = u
+            rd.save()
 
-            return redirect(destination)
+            #Now we log the user in. This also clears out the previous session
+            #containing the expiring RPX_ID_SESSION_KEY var. Normally, we get
+            #the user directly from auth.authenticate(...) which adds a
+            #User.backend attribute. We have to manually add it here:
+            u.backend = 'django_rpx.backends.RpxBackend'
+            auth.login(request, u)
+
+            return redirect(next)
     else: 
-        #Try to pre-populate the form with data gathered from the RPX login.
-        try:
-            user_rpxdata = RpxData.objects.get(user = request.user)
-            profile = user_rpxdata.profile
+        #No form submission so we will display page with initial form data.
+        #We try to pre-populate the form with data from the RPX login.
+        rpx_profile = rd.profile
 
-            #Clean the username to allow only alphanum and underscore.
-            username =  profile.get('preferredUsername') or \
-                        profile.get('displayName')
-            username = re.sub(r'[^\w+]', '', username)
+        #Clean the username to allow only alphanum and underscore.
+        username =  rpx_profile.get('preferredUsername') or \
+                    rpx_profile.get('displayName')
+        username = re.sub(r'[^\w+]', '', username)
 
-            form = RegisterForm(initial = {
-                'username': username,
-                'email': profile.get('email', '')
-            })
-        except RpxData.DoesNotExist:
-            form = RegisterForm()
+        form = RegisterForm(initial = {
+            'username': username,
+            'email': rpx_profile.get('email', '')
+        })
 
     return render_to_response('django_rpx/register.html', {
                                 'form': form,

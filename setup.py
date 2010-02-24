@@ -8,7 +8,7 @@ setup(
     author='Michael Huynh',
     author_email='mike@mikexstudios.com',
     url='http://github.com/mikexstudios/django-rpx',
-    install_requires = ['django-picklefield',]
+    install_requires = ['django-picklefield'],
     classifiers = [
         'Programming Language :: Python', 
         'Framework :: Django', 

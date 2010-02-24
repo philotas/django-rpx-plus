@@ -151,12 +151,12 @@ else:
 #######################
 #django_rpx settings: #
 #######################
-RPXNOW_API_KEY = '920a779d73ab00b6976f652a4fd8d13883f2fdb0'
+RPXNOW_API_KEY = ''
 
 # The realm is the subdomain of rpxnow.com that you signed up under. It handles 
 # your HTTP callback. (eg. http://mysite.rpxnow.com implies that RPXNOW_REALM  is
 # 'mysite'.
-RPXNOW_REALM = 'suppletext'
+RPXNOW_REALM = ''
 
 # (Optional)
 #RPX_TRUSTED_PROVIDERS = ''

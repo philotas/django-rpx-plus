@@ -2,6 +2,7 @@
 from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 #from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 # The messages framework will only be available from django 1.2 onwards. Since
 # most people are still using <= 1.1.1, we fallback on the backported message
@@ -13,12 +14,8 @@ except ImportError:
 
 from .forms import ProfileForm
 
+@login_required
 def profile(request):
-    #TODO: Should use auth decorator instead of this:
-    if not request.user.is_authenticated() or not request.user.is_active:
-        return redirect('auth_login')
-
-    message = False #A crude hack for displaying success messages
     if request.method == 'POST':
         form = ProfileForm(request.POST)
         if form.is_valid():

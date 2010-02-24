@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.contrib.auth.decorators import login_required
 
 #The reason why we use django's urlencode instead of urllib's urlencode is that
 #django's version can operate on unicode strings.
@@ -207,10 +208,8 @@ def register(request):
                               },
                               context_instance = RequestContext(request))
 
+@login_required
 def associate(request):
-    if not request.user.is_authenticated() or not request.user.is_active:
-        return redirect('auth_login')
-
     #Get associated accounts
     user_rpxdatas = RpxData.objects.filter(user = request.user)
 
@@ -225,11 +224,8 @@ def associate(request):
                               },
                                   context_instance = RequestContext(request))
 
+@login_required
 def delete_associated_login(request, rpxdata_id):
-    #TODO: Should use auth decorator instead of this:
-    if not request.user.is_authenticated() or not request.user.is_active:
-        return redirect('auth_login')
-
     #Check to see if the rpxdata_id exists and is associated with this user
     try:
         #We only allow deletion if user has more than one login

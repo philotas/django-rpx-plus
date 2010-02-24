@@ -1,5 +1,6 @@
 from django.conf import settings
 import django.contrib.auth as auth
+from django.contrib.auth.models import User
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -21,6 +22,10 @@ from django_rpx.forms import RegisterForm
 
 import re #for sub in register
 
+#The primary ID to the RpxData object is set in session when user is logged in
+#but not registered. The register view checks and uses this session var.
+RPX_ID_SESSION_KEY = '_rpxdata_id'
+
 def rpx_response(request):
     if request.method == 'POST':
         #According to http://rpxwiki.com/Passing-state-through-RPX, the query
@@ -36,42 +41,35 @@ def rpx_response(request):
         #information.
         token = request.POST.get('token', False)
         if token: 
-            user = auth.authenticate(token = token)
+            response = auth.authenticate(token = token)
+            #The django_rpx auth backend can return three things: None (means
+            #that auth has failed), a RpxData object (means that user has passed
+            #auth but is not registered), or a User object (means that user is
+            #auth AND registered).
             #TODO: Use type(user) == User or RpxData to check.
-            if user:
-                #Getting here means that the user logged in successfully.
-                #However, we two cases: 
-                if user.is_active:
-                    #User is already registered, so we just login.
-                    auth.login(request, user)
-                    return redirect(destination)
-                else:
-                    #User is not active. There is a possibility that the user is
-                    #new and needs to be registered/associated. We check that
-                    #here. First, get associated RpxData. Since we created a new
-                    #dummy user for this new Rpx login, we *know* that there
-                    #will only be one RpxData associated to this dummy user. If
-                    #no RpxData exists for the user, or if is_associated is
-                    #True, then we assume that the User has been deactivated.
-                    try:
-                        user_rpxdata = RpxData.objects.get(user = user)
-                        if user_rpxdata.is_associated == False:
-                            #Okay! This means that we have a new user waiting to be
-                            #associated to an account!
-                            #TODO: Make sure we really need to login here...
-                            auth.login(request, user)
-                            return redirect(settings.REGISTER_URL+\
-                                            '?next='+destination)
-                    except RpxData.DoesNotExist:
-                        #Do nothing, auth has failed.
-                        pass
+            if type(response) == User:
+                #Successful auth and user is registered so we login user.
+                auth.login(request, user)
+                return redirect(destination)
+            elif type(response) == RpxData:
+                #Successful auth, but user is NOT registered! So we redirect
+                #user to the register page. However, in order to tell the
+                #register view that the user is authed but not registered, 
+                #we set a session var that points to the RpxData object 
+                #primary ID. After the user has been registered, this session
+                #var will be removed.
+                request.session[RPX_ID_SESSION_KEY] = response.id
+                query_params = urlencode({'next': destination})
+                return redirect(settings.REGISTER_URL+'?'+query_params)
+            else:
+                #Do nothing, auth has failed.
+                pass
 
-    #If no user object is returned, then authentication has failed. We'll send
-    #user to login page where error message is displayed.
-    #Set success message.
+    #Authentication has failed. We'll send user  back to login page where error
+    #message is displayed.
     messages.error(request, 'There was an error in signing you in. Try again?')
-    destination = urlencode({'next': destination})
-    return redirect(reverse('auth_login')+'?'+destination)
+    query_params = urlencode({'next': destination})
+    return redirect(reverse('auth_login')+'?'+query_params)
 
 def associate_rpx_response(request):
     #See if a redirect param is specified. params are sent via both POST and

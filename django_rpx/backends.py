@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import User
 #The reason why we use django's urlencode instead of urllib's urlencode is that
 #django's version can operate on unicode strings.
 from django.utils.http import urlencode
@@ -11,6 +12,12 @@ import urllib2
 RPX_API_AUTH_URL = 'https://rpxnow.com/api/v2/auth_info'
 
 class RpxBackend:
+    def get_user(self, user_id): #required to have get_user method.
+        try:
+            return User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return None
+
     def authenticate(self, token = ''):
         #As detailed on https://rpxnow.com/docs#api, we send query RPX's API
         #URL to obtain auth_info.

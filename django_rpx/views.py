@@ -1,8 +1,7 @@
 from django.conf import settings
 import django.contrib.auth as auth
-from django.template import RequestContext
 from django.shortcuts import render_to_response, redirect
-from django.contrib.auth.models import User
+from django.template import RequestContext
 from django.core.urlresolvers import reverse
 
 #The reason why we use django's urlencode instead of urllib's urlencode is that
@@ -21,11 +20,6 @@ from django_rpx.models import RpxData
 from django_rpx.forms import RegisterForm
 
 import re #for sub in register
-
-def permute_name(name_string, num):
-    num_str=str(num)
-    max_len=29-len(num_str)
-    return ''.join([name_string[0:max_len], '-', num_str])
 
 def rpx_response(request):
     #See if a redirect param is specified. params are sent via both POST and

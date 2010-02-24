@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django_rpx.models import RpxData
 from django.conf import settings
-from django_rpx.views import permute_name
 
 import hashlib #encryption (MD5)
 import time #for seeding

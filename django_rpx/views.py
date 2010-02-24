@@ -210,19 +210,18 @@ def register(request):
 
 @login_required
 def associate(request):
-    #Get associated accounts
+    #Get associated accounts for user.
     user_rpxdatas = RpxData.objects.filter(user = request.user)
 
-    #We need to send the rpx_response to a customized method so we pass the
-    #custom rpx_response path into template:
+    #Our rpx_response is different from our usual URL since we need to use a 
+    #different view to handle the logic behind associating another account. This
+    #is why we pass in 'rpx_response_path'. 
     return render_to_response('django_rpx/associate.html', {
-                                'user': request.user, 
-                                'user_rpxdatas': user_rpxdatas,
-                                'num_logins': len(user_rpxdatas), 
-                                'rpx_response_path': reverse('associate_rpx_response'),
+                                'rpxdatas': user_rpxdatas,
                                 'extra': {'next': reverse('auth_associate')},
+                                'rpx_response_path': reverse('associate_rpx_response'),
                               },
-                                  context_instance = RequestContext(request))
+                              context_instance = RequestContext(request))
 
 @login_required
 def delete_associated_login(request, rpxdata_id):

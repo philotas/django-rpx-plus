@@ -35,13 +35,13 @@
         Here are the logins you have associated with your account.
     </p>
 
-    {% for rpxdata in user_rpxdatas %}
+    {% for rpxdata in rpxdatas %}
     <dl>
         <dt>{{ rpxdata.provider }}:</dt>
         <dd>
             <input type="text" class="user_identifier" value="{{ rpxdata.identifier }}" /> 
             {# Logically, checking != is bad. Should be > 1. But we don't have that tag #}
-            {% ifnotequal num_logins 1 %}
+            {% ifnotequal rpxdatas|length 1 %}
             <a href="{% url auth_delete_associated rpxdata.id %}" class="delete">(delete)</a>
             {% endifnotequal %}
         </dd>

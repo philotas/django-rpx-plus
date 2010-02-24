@@ -28,6 +28,13 @@ import re #for sub in register
 RPX_ID_SESSION_KEY = '_rpxdata_id'
 
 def rpx_response(request):
+    '''
+    Handles the POST response from RPX API. This is where the user is sent
+    after signing in through RPX.
+
+    @param request: Django request object.
+    @return: Redirect that takes user to 'next' or LOGIN_REDIRECT_URL.
+    '''
     if request.method == 'POST':
         #According to http://rpxwiki.com/Passing-state-through-RPX, the query
         #string parameters in our token url will be POST to our rpx_response so
@@ -81,6 +88,13 @@ def rpx_response(request):
 
 @login_required #User needs to be logged into an account in order to associate.
 def associate_rpx_response(request):
+    '''
+    Similar to rpx_response except that the logic for handling the response
+    cases is tailored for associating a new RPX login with an existing User.
+    
+    @param request: Django request object.
+    @return: Redirect user back to 'auth_associate'.
+    '''
     #Since this function and rpx_response(...) are very similar, removed much
     #of comments from this function for clarity. Refer to rpx_response's 
     #comments if you want to know what's going on.
@@ -111,6 +125,12 @@ def associate_rpx_response(request):
     return redirect(destination)
 
 def login(request):
+    '''
+    Displays the RPX login page.
+
+    @param request: Django request object.
+    @return: Rendered login.html page.
+    '''
     next = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
     extra = {'next': next}
 
@@ -120,6 +140,14 @@ def login(request):
                               context_instance = RequestContext(request))
 
 def register(request):
+    '''
+    Checks to see if user is logged in and unregistered. Then displays and
+    handles form for creating a new User. Then associates the user's RPX login
+    with the newly created User.
+    
+    @param request: Django request object.
+    @return: Rendered register.html or redirect user.
+    '''
     #See if a redirect param is specified. If not, we will default to
     #LOGIN_REDIRECT_URL.
     next = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
@@ -181,6 +209,12 @@ def register(request):
 
 @login_required
 def associate(request):
+    '''
+    Displays list of associated logins to current User.
+
+    @param request: Django request object.
+    @return: Rendered associate.html
+    '''
     #Get associated accounts for user.
     user_rpxdatas = RpxData.objects.filter(user = request.user)
 
@@ -196,6 +230,14 @@ def associate(request):
 
 @login_required
 def delete_associated_login(request, rpxdata_id):
+    '''
+    Deletes an associated login from the User.
+    
+    @param request: Django request object.
+    @type rpxdata_id: integer
+    @param rpxdata_id: ID (primary key) of RpxData object to delete.
+    @return: Redirect to 'auth_associate'.
+    '''
     #Check to see if the rpxdata_id exists and is associated with this user.
     try:
         #We only allow deletion if user has more than one login

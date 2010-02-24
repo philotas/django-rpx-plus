@@ -133,9 +133,9 @@ AUTHENTICATION_BACKENDS = (
 # as specified on page: http://docs.djangoproject.com/en/dev/ref/settings/. You
 # can override them if you like.
 #account.
-LOGIN_REDIRECT_URL = '' #default: '/accounts/profile/'
-LOGIN_URL = '' #default: '/accounts/login/'
-LOGOUT_URL = '' #default: '/accounts/logout/'
+#LOGIN_REDIRECT_URL = '' #default: '/accounts/profile/'
+#LOGIN_URL = '' #default: '/accounts/login/'
+#LOGOUT_URL = '' #default: '/accounts/logout/'
 
 ########################################
 # django messages framework settings:  #

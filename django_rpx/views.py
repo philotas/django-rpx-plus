@@ -22,48 +22,49 @@ from django_rpx.forms import RegisterForm
 import re #for sub in register
 
 def rpx_response(request):
-    #See if a redirect param is specified. params are sent via both POST and
-    #GET. If not, we will default to LOGIN_REDIRECT_URL.
-    try:
-        destination = request.POST['next']
-        if destination.strip() == '':
-            raise KeyError
-    except KeyError:
-        destination = settings.LOGIN_REDIRECT_URL
-        
-    #RPX sends token back via POST
-    token = request.POST.get('token', False)
-    if token: 
-        #Since we specified the rpx auth backend in settings, this will use our
-        #custom authenticate function.
-        user = auth.authenticate(token = token)
-        if user:
-            if user.is_active:
-                #login creates session for the user.
-                auth.login(request, user)
-                return redirect(destination)
-            else:
-                #User is not active. There is a possibility that the user is new
-                #and needs to be registered/associated. We check that here. First,
-                #get associated RpxData. Since we created a new dummy user for this
-                #new Rpx login, we *know* that there will only be one RpxData
-                #associated to this dummy user. If no RpxData exists for the user,
-                #or if is_associated is True, then we assume that the User has
-                #been deactivated.
-                try:
-                    user_rpxdata = RpxData.objects.get(user = user)
-                    if user_rpxdata.is_associated == False:
-                        #Okay! This means that we have a new user waiting to be
-                        #associated to an account!
-                        #TODO: Make sure we really need to login here...
-                        auth.login(request, user)
-                        return redirect(settings.REGISTER_URL+\
-                                        '?next='+destination)
-                except RpxData.DoesNotExist:
-                    #Do nothing, auth has failed.
-                    pass
+    if request.method == 'POST':
+        #According to http://rpxwiki.com/Passing-state-through-RPX, the query
+        #string parameters in our token url will be POST to our rpx_response so
+        #that we can retain some state information. We use this for 'next', a
+        #var that specifies where the user should be redirected after successful
+        #login.
+        destination = request.POST.get('next', settings.LOGIN_REDIRECT_URL)
+            
+        #RPX also sends token back via POST. We pass this token to our RPX auth
+        #backend which, then, uses the token to access the RPX API to confirm 
+        #that the user logged in successfully and to obtain the user's login
+        #information.
+        token = request.POST.get('token', False)
+        if token: 
+            user = auth.authenticate(token = token)
+            if user:
+                #Getting here means that the user logged in successfully.
+                #However, we two cases: 
+                if user.is_active:
+                    #User is already registered, so we just login.
+                    auth.login(request, user)
+                    return redirect(destination)
+                else:
+                    #User is not active. There is a possibility that the user is
+                    #new and needs to be registered/associated. We check that
+                    #here. First, get associated RpxData. Since we created a new
+                    #dummy user for this new Rpx login, we *know* that there
+                    #will only be one RpxData associated to this dummy user. If
+                    #no RpxData exists for the user, or if is_associated is
+                    #True, then we assume that the User has been deactivated.
+                    try:
+                        user_rpxdata = RpxData.objects.get(user = user)
+                        if user_rpxdata.is_associated == False:
+                            #Okay! This means that we have a new user waiting to be
+                            #associated to an account!
+                            #TODO: Make sure we really need to login here...
+                            auth.login(request, user)
+                            return redirect(settings.REGISTER_URL+\
+                                            '?next='+destination)
+                    except RpxData.DoesNotExist:
+                        #Do nothing, auth has failed.
+                        pass
 
-    
     #If no user object is returned, then authentication has failed. We'll send
     #user to login page where error message is displayed.
     #Set success message.

@@ -98,7 +98,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'test_utils',
     'app', #This is our app. Ideally, this would be named better.
     'django_rpx', #Put this after our app with template overrides.
 ]

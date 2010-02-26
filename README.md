@@ -62,9 +62,6 @@ Installation
     [backported messages framework][1] if you are using <= django 1.1.1) and 
     django-picklefield. Using setup.py will automatically install these.
     
-    [1]: http://github.com/mikexstudios/django-messages-framework "Backported django messages framework"
-    
-    
 2.  Edit settings.py and place `django_rpx_plus` in your `INSTALLED_APPS`.
 
 3.  Also add the following django_rpx_plus settings to your settings.py and fill
@@ -100,8 +97,6 @@ Installation
 5.  You also need to make sure the django messages framework is installed correctly.
     See the [installation instructions][2] for more information.
 
-    [2]: http://docs.djangoproject.com/en/dev/topics/auth/#installation "Django messages framework installation"
-
 6.  In your app `urls.py`, add to `urlpatterns`:
         (r'^accounts/', include('django_rpx.urls')),
 
@@ -118,18 +113,19 @@ Installation
 Authors
 -------
 
-* Michael Huynh (http://github.com/mikexstudios)
+* [Michael Huynh](http://github.com/mikexstudios)
   Rewrote much of django-rpx, adding support for multiple account mapping,
   removing need to use the User.is_active field, and included example app.
-* Alex Kessinger (http://github.com/voidfiles)
+
+* [Alex Kessinger](http://github.com/voidfiles)
   Added template snippets, made django-rpx into a module, and added setup.py.
-* Dan MacKinlay (http://github.com/howthebodyworks)
+
+* [Dan MacKinlay](http://github.com/howthebodyworks)
   Started django-rpx and wrote most of the functionality in the app. 
+
 * Brian Ellin (RPX Product Manager)
   Provided an [initial recipe][3] for interacting with RPX.
   
-  [3]: http://appengine-cookbook.appspot.com/recipe/accept-google-aol-yahoo-myspace-facebook-and-openid-logins/    "Initial RPX python recipe"
-
 
 TODO
 ----
@@ -145,5 +141,10 @@ TODO
   ease integration?
 
 * See [Issues][4] for more.
-  
-  [4]: http://github.com/mikexstudios/django-rpx-plus/issues    "Issues"
+
+
+
+[1]: http://github.com/mikexstudios/django-messages-framework "Backported django messages framework"
+[2]: http://docs.djangoproject.com/en/dev/topics/auth/#installation "Django messages framework installation"
+[3]: http://appengine-cookbook.appspot.com/recipe/accept-google-aol-yahoo-myspace-facebook-and-openid-logins/    "Initial RPX python recipe"
+[4]: http://github.com/mikexstudios/django-rpx-plus/issues    "Issues"

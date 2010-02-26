@@ -58,11 +58,10 @@ Installation
        python setup.py install
    Ideally, you would be using a virtualenv and install to that env using pip.
 
-   **NOTE**: django_rpx_plus depends on the django messages framework (see the
-   [backported messages framework][1] if you are using <= django 1.1.1) and 
-   django-picklefield. Using setup.py will automatically install these.
+    **NOTE**: django_rpx_plus depends on the django messages framework (see the
+    [backported messages framework][1] if you are using <= django 1.1.1) and 
+    django-picklefield. Using setup.py will automatically install these.
     
-   [1] http://github.com/mikexstudios/django-messages-framework "Backported django messages framework"
 
 2. Edit settings.py and place `django_rpx_plus` in your `INSTALLED_APPS`.
 
@@ -99,8 +98,6 @@ Installation
 5. You also need to make sure the django messages framework is installed correctly.
    See the [installation instructions][2] for more information.
 
-   [2] http://docs.djangoproject.com/en/dev/topics/auth/#installation "Django messages framework installation"
-
 6. In your app `urls.py`, add to `urlpatterns`:
        (r'^accounts/', include('django_rpx.urls')),
 
@@ -127,8 +124,6 @@ Authors
 * Brian Ellin (RPX Product Manager)
   Provided an [initial recipe][3] for interacting with RPX.
 
-[3] http://appengine-cookbook.appspot.com/recipe/accept-google-aol-yahoo-myspace-facebook-and-openid-logins/    "Initial RPX python recipe"
-
 
 TODO
 ----
@@ -145,4 +140,11 @@ TODO
 
 * See [Issues][4] for more.
 
-[4] http://github.com/mikexstudios/django-rpx-plus/issues    "Issues"
+
+Links
+-----
+
+[1]: http://github.com/mikexstudios/django-messages-framework "Backported django messages framework"
+[2]: http://docs.djangoproject.com/en/dev/topics/auth/#installation "Django messages framework installation"
+[3]: http://appengine-cookbook.appspot.com/recipe/accept-google-aol-yahoo-myspace-facebook-and-openid-logins/    "Initial RPX python recipe"
+[4]: http://github.com/mikexstudios/django-rpx-plus/issues    "Issues"

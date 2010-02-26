@@ -33,8 +33,8 @@ django-messages-framework
 # Uncomment below packages if you want to run app/tests.py.
 # django-test-utils includes twill_runner, which we use to test RPX logins.
 # It has BeautifulSoup as a dependency (automatically installed).
-#django-test-utils
+django-test-utils
 
 # Twill automates browsing and is important for accessing RPX APIs to test
 # our login system.
-#twill
+twill

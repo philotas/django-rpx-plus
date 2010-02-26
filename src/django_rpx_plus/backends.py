@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.http import urlencode
 from django.utils import simplejson
 
-from django_rpx.models import RpxData
+from django_rpx_plus.models import RpxData
 
 import urllib2
 

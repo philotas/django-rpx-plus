@@ -34,7 +34,7 @@ def _rpx_common(request, extra = '', rpx_response = False):
         #This is the default rpx_response that will be used most of the time.
         #The only time when we don't use this, is when we need to associate
         #a login, so we end up using a different url.
-        rpx_response = reverse('django_rpx.views.rpx_response')
+        rpx_response = reverse('django_rpx_plus.views.rpx_response')
 
     #Construct the token url:
     token_url = "http://%s%s%s" % (request.get_host(),
@@ -46,7 +46,7 @@ def _rpx_common(request, extra = '', rpx_response = False):
     }
 
 
-@register.inclusion_tag('django_rpx/rpx_link.html', takes_context = True)
+@register.inclusion_tag('django_rpx_plus/rpx_link.html', takes_context = True)
 def rpx_link(context, text, extra = '', rpx_response = False):
     '''
     Template tag that returns an HTML link that, when clicked, displays
@@ -80,7 +80,7 @@ def rpx_link(context, text, extra = '', rpx_response = False):
 
     return common
 
-@register.inclusion_tag('django_rpx/rpx_script.html', takes_context = True)
+@register.inclusion_tag('django_rpx_plus/rpx_script.html', takes_context = True)
 def rpx_script(context, extra = '', rpx_response = False, flags = ''):
     '''
     Template tag that returns HTML script tags to load the RPX popup widget.
@@ -106,7 +106,7 @@ def rpx_script(context, extra = '', rpx_response = False, flags = ''):
     return common
 
 
-@register.inclusion_tag('django_rpx/rpx_embed.html', takes_context = True)
+@register.inclusion_tag('django_rpx_plus/rpx_embed.html', takes_context = True)
 def rpx_embed(context, extra = '', rpx_response = False):
     '''
     Template tag that returns HTML iframe code which displays an embedded
@@ -124,7 +124,7 @@ def rpx_embed(context, extra = '', rpx_response = False):
     return common
 
 
-@register.inclusion_tag('django_rpx/rpx_url.html', takes_context = True)
+@register.inclusion_tag('django_rpx_plus/rpx_url.html', takes_context = True)
 def rpx_url(context, extra = '', rpx_response = False):
     '''
     Template tag that returns a raw link to a login page hosted on RPX

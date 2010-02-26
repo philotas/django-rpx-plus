@@ -80,5 +80,5 @@ class RPXTest(TestCase):
         #Make sure the register.html template is rendered. Since register.html
         #inherits from base.html, response.template is a list of template obj
         #ordered by order in which they were rendered.
-        self.assertTrue(response.template[0].name == 'django_rpx/register.html')
+        self.assertTrue(response.template[0].name == 'django_rpx_plus/register.html')
 

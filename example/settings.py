@@ -99,7 +99,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.sites',
     'app', #This is our app. Ideally, this would be named better.
-    'django_rpx', #Put this after our app with template overrides.
+    'django_rpx_plus', #Put this after our app with template overrides.
 ]
 if BUILT_IN_MESSAGES_FRAMEWORK:
     INSTALLED_APPS.append('django.contrib.messages')
@@ -125,7 +125,7 @@ else:
 # Auth backend config tuple does not appear in settings file by default. So we
 # specify both the RpxBackend and the default ModelBackend:
 AUTHENTICATION_BACKENDS = (
-    'django_rpx.backends.RpxBackend', 
+    'django_rpx_plus.backends.RpxBackend', 
     'django.contrib.auth.backends.ModelBackend', #default django auth
 )
 
@@ -148,9 +148,9 @@ if BUILT_IN_MESSAGES_FRAMEWORK:
 else:
     MESSAGE_STORAGE = 'django_messages_framework.storage.fallback.FallbackStorage'
 
-#######################
-#django_rpx settings: #
-#######################
+############################
+#django_rpx_plus settings: #
+############################
 RPXNOW_API_KEY = ''
 
 # The realm is the subdomain of rpxnow.com that you signed up under. It handles 

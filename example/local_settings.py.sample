@@ -9,9 +9,9 @@ DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
-#######################
-#django_rpx settings: #
-#######################
+############################
+#django_rpx_plus settings: #
+############################
 RPXNOW_API_KEY = ''
 
 # The realm is the subdomain of rpxnow.com that you signed up under. It handles 

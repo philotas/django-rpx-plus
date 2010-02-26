@@ -18,8 +18,8 @@ try:
 except ImportError:
     import django_messages_framework as messages #backport of messages framework
 
-from django_rpx.models import RpxData
-from django_rpx.forms import RegisterForm
+from django_rpx_plus.models import RpxData
+from django_rpx_plus.forms import RegisterForm
 
 import re #for sub in register
 
@@ -50,7 +50,7 @@ def rpx_response(request):
         token = request.POST.get('token', False)
         if token: 
             response = auth.authenticate(token = token)
-            #The django_rpx auth backend can return three things: None (means
+            #The django_rpx_plus auth backend can return three things: None (means
             #that auth has failed), a RpxData object (means that user has passed
             #auth but is not registered), or a User object (means that user is
             #auth AND registered).
@@ -134,7 +134,7 @@ def login(request):
     next = request.GET.get('next', settings.LOGIN_REDIRECT_URL)
     extra = {'next': next}
 
-    return render_to_response('django_rpx/login.html', {
+    return render_to_response('django_rpx_plus/login.html', {
                                 'extra': extra,
                               },
                               context_instance = RequestContext(request))
@@ -183,7 +183,7 @@ def register(request):
             #containing the expiring RPX_ID_SESSION_KEY var. Normally, we get
             #the user directly from auth.authenticate(...) which adds a
             #User.backend attribute. We have to manually add it here:
-            u.backend = 'django_rpx.backends.RpxBackend'
+            u.backend = 'django_rpx_plus.backends.RpxBackend'
             auth.login(request, u)
 
             return redirect(next)
@@ -202,7 +202,7 @@ def register(request):
             'email': rpx_profile.get('email', '')
         })
 
-    return render_to_response('django_rpx/register.html', {
+    return render_to_response('django_rpx_plus/register.html', {
                                 'form': form,
                               },
                               context_instance = RequestContext(request))
@@ -221,7 +221,7 @@ def associate(request):
     #Our rpx_response is different from our usual URL since we need to use a 
     #different view to handle the logic behind associating another account. This
     #is why we pass in 'rpx_response_path'. 
-    return render_to_response('django_rpx/associate.html', {
+    return render_to_response('django_rpx_plus/associate.html', {
                                 'rpxdatas': user_rpxdatas,
                                 'extra': {'next': reverse('auth_associate')},
                                 'rpx_response_path': reverse('associate_rpx_response'),

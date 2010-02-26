@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name = 'django_rpx',
+    name = 'django_rpx_plus',
     #We exclude example app from installing since that may interfere from
     #someone testing out their own example app of the same name. I got 
     #bit by this :). We also put django_rpx/ inside of a src/ dir so that
@@ -13,7 +13,7 @@ setup(
     description  = 'RPX auth support for django',
     author='Michael Huynh',
     author_email='mike@mikexstudios.com',
-    url='http://github.com/mikexstudios/django-rpx',
+    url='http://github.com/mikexstudios/django-rpx-plus',
     install_requires = ['django-picklefield'],
     classifiers = [
         'Programming Language :: Python', 

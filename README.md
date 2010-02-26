@@ -66,9 +66,9 @@ Installation
 
 3.  Also add the following django_rpx_plus settings to your settings.py and fill
     in the values with parameters provided by RPX.
-        #######################
-        #django_rpx settings: #
-        #######################
+        ############################
+        #django_rpx_plus settings: #
+        ############################
         RPXNOW_API_KEY = ''
         
         # The realm is the subdomain of rpxnow.com that you signed up under. It handles 
@@ -90,7 +90,7 @@ Installation
         # Auth backend config tuple does not appear in settings file by default. So we
         # specify both the RpxBackend and the default ModelBackend:
         AUTHENTICATION_BACKENDS = (
-            'django_rpx.backends.RpxBackend', 
+            'django_rpx_plus.backends.RpxBackend', 
             'django.contrib.auth.backends.ModelBackend', #default django auth
         )
 
@@ -98,7 +98,7 @@ Installation
     See the [installation instructions][2] for more information.
 
 6.  In your app `urls.py`, add to `urlpatterns`:
-        (r'^accounts/', include('django_rpx.urls')),
+        (r'^accounts/', include('django_rpx_plus.urls')),
 
 7.  You need to create the relevant template files for django_rpx_plus in your
     app's template directory. For example, if your app is called APP, put the

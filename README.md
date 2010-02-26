@@ -53,62 +53,66 @@ and Alex Kessinger. However, it was postfixed with '-plus' because:
 Installation
 ------------
 
-1. Place the directory 'django_rpx_plus' somewhere in your path. You can do this
-   manually or by running:
-       python setup.py install
-   Ideally, you would be using a virtualenv and install to that env using pip.
+1.  Place the directory 'django_rpx_plus' somewhere in your path. You can do this
+    manually or by running:
+        python setup.py install
+    Ideally, you would be using a virtualenv and install to that env using pip.
 
     **NOTE**: django_rpx_plus depends on the django messages framework (see the
     [backported messages framework][1] if you are using <= django 1.1.1) and 
     django-picklefield. Using setup.py will automatically install these.
     
+    [1]: http://github.com/mikexstudios/django-messages-framework "Backported django messages framework"
+    
+    
+2.  Edit settings.py and place `django_rpx_plus` in your `INSTALLED_APPS`.
 
-2. Edit settings.py and place `django_rpx_plus` in your `INSTALLED_APPS`.
+3.  Also add the following django_rpx_plus settings to your settings.py and fill
+    in the values with parameters provided by RPX.
+        #######################
+        #django_rpx settings: #
+        #######################
+        RPXNOW_API_KEY = ''
+        
+        # The realm is the subdomain of rpxnow.com that you signed up under. It handles 
+        # your HTTP callback. (eg. http://mysite.rpxnow.com implies that RPXNOW_REALM  is
+        # 'mysite'.
+        RPXNOW_REALM = ''
+        
+        # (Optional)
+        #RPX_TRUSTED_PROVIDERS = ''
+        
+        # If it is the first time a user logs into your site through RPX, we will send 
+        # them to a page so that they can register on your site. The purpose is to 
+        # let the user choose a username (the one that RPX returns isn't always suitable)
+        # and confirm their email address (RPX doesn't always return the user's email).
+        REGISTER_URL = '/accounts/register/'
 
-3. Also add the following django_rpx_plus settings to your settings.py and fill
-   in the values with parameters provided by RPX.
-       #######################
-       #django_rpx settings: #
-       #######################
-       RPXNOW_API_KEY = ''
-       
-       # The realm is the subdomain of rpxnow.com that you signed up under. It handles 
-       # your HTTP callback. (eg. http://mysite.rpxnow.com implies that RPXNOW_REALM  is
-       # 'mysite'.
-       RPXNOW_REALM = ''
-       
-       # (Optional)
-       #RPX_TRUSTED_PROVIDERS = ''
-       
-       # If it is the first time a user logs into your site through RPX, we will send 
-       # them to a page so that they can register on your site. The purpose is to 
-       # let the user choose a username (the one that RPX returns isn't always suitable)
-       # and confirm their email address (RPX doesn't always return the user's email).
-       REGISTER_URL = '/accounts/register/'
+4.  Add `django_rpx_plus.backends.RpxBackend` to your `AUTHENTICATION_BACKENDS`. It
+    should come before the default `ModelBackend`.
+        # Auth backend config tuple does not appear in settings file by default. So we
+        # specify both the RpxBackend and the default ModelBackend:
+        AUTHENTICATION_BACKENDS = (
+            'django_rpx.backends.RpxBackend', 
+            'django.contrib.auth.backends.ModelBackend', #default django auth
+        )
 
-4. Add `django_rpx_plus.backends.RpxBackend` to your `AUTHENTICATION_BACKENDS`. It
-   should come before the default `ModelBackend`.
-       # Auth backend config tuple does not appear in settings file by default. So we
-       # specify both the RpxBackend and the default ModelBackend:
-       AUTHENTICATION_BACKENDS = (
-           'django_rpx.backends.RpxBackend', 
-           'django.contrib.auth.backends.ModelBackend', #default django auth
-       )
+5.  You also need to make sure the django messages framework is installed correctly.
+    See the [installation instructions][2] for more information.
 
-5. You also need to make sure the django messages framework is installed correctly.
-   See the [installation instructions][2] for more information.
+    [2]: http://docs.djangoproject.com/en/dev/topics/auth/#installation "Django messages framework installation"
 
-6. In your app `urls.py`, add to `urlpatterns`:
-       (r'^accounts/', include('django_rpx.urls')),
+6.  In your app `urls.py`, add to `urlpatterns`:
+        (r'^accounts/', include('django_rpx.urls')),
 
-7. You need to create the relevant template files for django_rpx_plus in your
-   app's template directory. For example, if your app is called APP, put the
-   django_rpx_plus template files in:
-       APP/templates/django_rpx_plus/
-   Sample django_rpx_plus template files have been provided in the example app.
-   If you create your own templates, note that you can use RPX template tags
-   by adding the following to the top of your template file:
-       {% load rpx %}
+7.  You need to create the relevant template files for django_rpx_plus in your
+    app's template directory. For example, if your app is called APP, put the
+    django_rpx_plus template files in:
+        APP/templates/django_rpx_plus/
+    Sample django_rpx_plus template files have been provided in the example app.
+    If you create your own templates, note that you can use RPX template tags
+    by adding the following to the top of your template file:
+        {% load rpx %}
   
 
 Authors
@@ -123,6 +127,8 @@ Authors
   Started django-rpx and wrote most of the functionality in the app. 
 * Brian Ellin (RPX Product Manager)
   Provided an [initial recipe][3] for interacting with RPX.
+  
+  [3]: http://appengine-cookbook.appspot.com/recipe/accept-google-aol-yahoo-myspace-facebook-and-openid-logins/    "Initial RPX python recipe"
 
 
 TODO
@@ -139,12 +145,5 @@ TODO
   ease integration?
 
 * See [Issues][4] for more.
-
-
-Links
------
-
-[1]: http://github.com/mikexstudios/django-messages-framework "Backported django messages framework"
-[2]: http://docs.djangoproject.com/en/dev/topics/auth/#installation "Django messages framework installation"
-[3]: http://appengine-cookbook.appspot.com/recipe/accept-google-aol-yahoo-myspace-facebook-and-openid-logins/    "Initial RPX python recipe"
-[4]: http://github.com/mikexstudios/django-rpx-plus/issues    "Issues"
+  
+  [4]: http://github.com/mikexstudios/django-rpx-plus/issues    "Issues"

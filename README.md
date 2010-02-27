@@ -94,13 +94,22 @@ Installation
             'django.contrib.auth.backends.ModelBackend', #default django auth
         )
 
-5.  You also need to make sure the django messages framework is installed correctly.
+5.  Add `django.core.context_processors.request` to your `TEMPLATE_CONTEXT_PROCESSORS`:
+        TEMPLATE_CONTEXT_PROCESSORS = (
+            'django.core.context_processors.auth', #for user template var
+            #'django.core.context_processors.debug',
+            #'django.core.context_processors.i18n',
+            'django.core.context_processors.media', #for MEDIA_URL template var
+            'django.core.context_processors.request', #includes request in RequestContext
+        )
+
+6.  You also need to make sure the django messages framework is installed correctly.
     See the [installation instructions][2] for more information.
 
-6.  In your app `urls.py`, add to `urlpatterns`:
+7.  In your app `urls.py`, add to `urlpatterns`:
         (r'^accounts/', include('django_rpx_plus.urls')),
 
-7.  You need to create the relevant template files for django_rpx_plus in your
+8.  You need to create the relevant template files for django_rpx_plus in your
     app's template directory. For example, if your app is called APP, put the
     django_rpx_plus template files in:
         APP/templates/django_rpx_plus/

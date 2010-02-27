@@ -115,7 +115,6 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     #'django.core.context_processors.i18n',
     'django.core.context_processors.media', #for MEDIA_URL template var
     'django.core.context_processors.request', #includes request in RequestContext
-    #'django_messages_framework.context_processors.messages', #backport of dev
 ]
 if BUILT_IN_MESSAGES_FRAMEWORK:
     TEMPLATE_CONTEXT_PROCESSORS.append('django.contrib.messages.context_processors.messages')
@@ -160,6 +159,18 @@ RPXNOW_REALM = ''
 
 # (Optional)
 #RPX_TRUSTED_PROVIDERS = ''
+
+# (Optional)
+# RPX requires a token_url to be passed to its APIs. The token_url is an
+# absolute url that points back to the rpx_response view. By default, this
+# token_url is constructed by using request.get_host(). However, there may
+# be cases where rpx_response is hosted on another domain (eg. if the website
+# is using subdomains). Therefore, we can force the base url to be fixed instead
+# of auto-detected. 
+# Note: This is the HOSTNAME without the beginning 'http://' or trailing slash
+#       part. An example hostname would be: localhost:8000
+# Protip: You can set RPX_BASE_SITE_HOST in middleware too.
+#RPX_BASE_SITE_HOST = '' 
 
 # If it is the first time a user logs into your site through RPX, we will send 
 # them to a page so that they can register on your site. The purpose is to 

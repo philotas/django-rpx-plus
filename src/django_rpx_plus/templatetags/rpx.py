@@ -34,10 +34,14 @@ def _rpx_common(request, extra = '', rpx_response = False):
         #This is the default rpx_response that will be used most of the time.
         #The only time when we don't use this, is when we need to associate
         #a login, so we end up using a different url.
-        rpx_response = reverse('django_rpx_plus.views.rpx_response')
+        rpx_response = reverse('rpx_response')
 
     #Construct the token url:
-    token_url = "http://%s%s%s" % (request.get_host(),
+    base_host = getattr(settings, 'RPX_BASE_SITE_HOST', request.get_host())
+    #Also check for empty var:
+    if not base_host:
+        base_host = request.get_host()
+    token_url = "http://%s%s%s" % (base_host,
                                    rpx_response,
                                    extra)
     return {

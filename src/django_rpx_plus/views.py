@@ -10,13 +10,23 @@ from django.contrib.auth.decorators import login_required
 #django's version can operate on unicode strings.
 from django.utils.http import urlencode
 
-# The messages framework will only be available from django 1.2 onwards. Since
-# most people are still using <= 1.1.1, we fallback on the backported message
-# framework:
+#The messages framework will only be available from django 1.2 onwards. Since
+#most people are still using <= 1.1.1, we fallback on the backported message
+#framework:
 try:
     from django.contrib import messages
 except ImportError:
     import django_messages_framework as messages #backport of messages framework
+
+#In django 1.2 onwards, the CSRF middleware is activated by default. This means
+#that when RPX directs the user to POST the token to rpx_response, the request
+#will fail since it does not contain the CSRF token. Therefore, we exempt the
+#view from CSRF processing.
+try:
+    from django.views.decorators.csrf import csrf_exempt
+except ImportError:
+    from django.contrib.csrf.middleware import csrf_exempt
+
 
 from django_rpx_plus.models import RpxData
 from django_rpx_plus.forms import RegisterForm
@@ -27,6 +37,7 @@ import re #for sub in register
 #but not registered. The register view checks and uses this session var.
 RPX_ID_SESSION_KEY = '_rpxdata_id'
 
+@csrf_exempt
 def rpx_response(request):
     '''
     Handles the POST response from RPX API. This is where the user is sent
@@ -87,6 +98,7 @@ def rpx_response(request):
     return redirect(reverse('auth_login')+'?'+query_params)
 
 @login_required #User needs to be logged into an account in order to associate.
+@csrf_exempt
 def associate_rpx_response(request):
     '''
     Similar to rpx_response except that the logic for handling the response

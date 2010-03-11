@@ -23,6 +23,7 @@
 </p>
 
 <form action="" method="post" name="profile_form" id="profile_form">
+    {# NOTE: If you are using django 1.2, you'll need to add the csrf token here #}
     {{ form.as_p }}
     <div class="actions">
         <button type="submit" name="submit" value="Save">Save &raquo;</button>

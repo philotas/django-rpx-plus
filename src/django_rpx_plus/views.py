@@ -30,6 +30,7 @@ except ImportError:
 
 from django_rpx_plus.models import RpxData
 from django_rpx_plus.forms import RegisterForm
+import django_rpx_plus.signals as signals
 
 import re #for sub in register
 
@@ -190,6 +191,10 @@ def register(request):
 
             rd.user = u
             rd.save()
+
+            #Might want to perform some kind of post-registration action so we
+            #send a signal. sender is None since we aren't sending within an obj.
+            signals.registration_successful.send(sender = None, user = u)
 
             #Now we log the user in. This also clears out the previous session
             #containing the expiring RPX_ID_SESSION_KEY var. Normally, we get

@@ -83,6 +83,10 @@ Installation
         # Sets the language of the sign-in interface for *ONLY* the popup and the embedded
         # widget. For the valid language options, see the 'Sign-In Interface Localization'
         # section of https://rpxnow.com/docs. If not specified, defaults to 'en'.
+        # NOTE: You can override this setting in the request object like:
+        #       request.RPX_LANGUAGE_PREFERENCE = 'fr'
+        #       Setting RPX_LANGUAGE_PREFERENCE in request is helpful if different visitors
+        #       have different language settings.
         #RPX_LANGUAGE_PREFERENCE = 'en'
         
         # If it is the first time a user logs into your site through RPX, we will send 
@@ -135,6 +139,11 @@ Tips
     the your flexibility since if you want to add entries to `extra`, you may need
     to override some of the provided django-rpx-plus views (such as login). If you
     have any ideas on how to improve handling of `extra`, please let me know.
+
+*   You can override this setting in the request object like:
+        request.RPX_LANGUAGE_PREFERENCE = 'fr'
+    Setting `RPX_LANGUAGE_PREFERENCE` in `request` is helpful if different
+    visitors have different language settings.
 
 
 Authors

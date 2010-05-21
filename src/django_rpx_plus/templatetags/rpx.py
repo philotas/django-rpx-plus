@@ -44,10 +44,18 @@ def _rpx_common(request, extra = '', rpx_response = False):
     token_url = "http://%s%s%s" % (base_host,
                                    rpx_response,
                                    extra)
+    
+    #The request object can override RPX_LANGUAGE_PREFERENCE. This is useful if 
+    #different visitors have different language preferences.
+    try:
+        language_preference = request.RPX_LANGUAGE_PREFERENCE
+    except AttributeError:
+        language_preference = getattr(settings, 'RPX_LANGUAGE_PREFERENCE', 'en')
+
     return {
         'realm': settings.RPXNOW_REALM,
         'token_url': token_url,
-        'language_preference': getattr(settings, 'RPX_LANGUAGE_PREFERENCE', 'en'),
+        'language_preference': language_preference,
     }
 
 

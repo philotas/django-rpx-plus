@@ -172,6 +172,12 @@ RPXNOW_REALM = ''
 # Protip: You can set RPX_BASE_SITE_HOST in middleware too.
 #RPX_BASE_SITE_HOST = '' 
 
+# (Optional)
+# Sets the language of the sign-in interface for *ONLY* the popup and the embedded
+# widget. For the valid language options, see the 'Sign-In Interface Localization'
+# section of https://rpxnow.com/docs. If not specified, defaults to 'en'.
+#RPX_LANGUAGE_PREFERENCE = 'en'
+
 # If it is the first time a user logs into your site through RPX, we will send 
 # them to a page so that they can register on your site. The purpose is to 
 # let the user choose a username (the one that RPX returns isn't always suitable)

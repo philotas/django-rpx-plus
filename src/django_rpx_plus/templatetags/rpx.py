@@ -13,13 +13,13 @@ def _rpx_common(request, extra = '', rpx_response = False):
     dict for use in rpx tag templates.
 
     @param request: Django request object.
-    @type extra: string
+    @type extra: dict
     @param extra: Extra query string/parameters to include in the token_url. 
                   Useful for adding GET params that will be passed back to the
-                  rpx_response handler.  Do not include the preceding '?' for
-                  query string.  Example usage would be to include a 'next' GET
-                  param which signifies where the user will be redirected to
-                  after successful login.
+                  rpx_response handler. Example usage would be to include a
+                  'next' GET param which signifies where the user will be
+                  redirected to after successful login. Example input:
+                  {'next': 'http://example.com/next_url'}
     @type rpx_response: string
     @param rpx_response: Relative url path to where we will handle the RPX
                          response in our app. This relative path will be used
@@ -47,6 +47,7 @@ def _rpx_common(request, extra = '', rpx_response = False):
     return {
         'realm': settings.RPXNOW_REALM,
         'token_url': token_url,
+        'language_preference': getattr(settings, 'RPX_LANGUAGE_PREFERENCE', 'en'),
     }
 
 

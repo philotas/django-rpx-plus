@@ -78,6 +78,12 @@ Installation
         
         # (Optional)
         #RPX_TRUSTED_PROVIDERS = ''
+
+        # (Optional)
+        # Sets the language of the sign-in interface for *ONLY* the popup and the embedded
+        # widget. For the valid language options, see the 'Sign-In Interface Localization'
+        # section of https://rpxnow.com/docs. If not specified, defaults to 'en'.
+        #RPX_LANGUAGE_PREFERENCE = 'en'
         
         # If it is the first time a user logs into your site through RPX, we will send 
         # them to a page so that they can register on your site. The purpose is to 
@@ -117,7 +123,19 @@ Installation
     If you create your own templates, note that you can use RPX template tags
     by adding the following to the top of your template file:
         {% load rpx %}
-  
+
+
+Tips
+----
+
+*   The `extra` parameter in the rpx template tags takes a dictionary that will be
+    `extra = urlencode(extra)` into a URL GET query string. However, the problem is
+    that you can't pass a dictionary as a param in a template tag. So typically,
+    `extra` is set in the view function as a template variable. However, this limits
+    the your flexibility since if you want to add entries to `extra`, you may need
+    to override some of the provided django-rpx-plus views (such as login). If you
+    have any ideas on how to improve handling of `extra`, please let me know.
+
 
 Authors
 -------

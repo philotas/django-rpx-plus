@@ -5,6 +5,8 @@ from django.core.urlresolvers import reverse
 #django's version can operate on unicode strings.
 from django.utils.http import urlencode
 
+from django_rpx_plus.helpers import django_lang_code_to_rpx_lang_preference
+
 register = template.Library()
 
 def _rpx_common(request, extra = '', rpx_response = False):
@@ -45,13 +47,20 @@ def _rpx_common(request, extra = '', rpx_response = False):
                                    rpx_response,
                                    extra)
     
-    #The request object can override RPX_LANGUAGE_PREFERENCE. This is useful if 
-    #different visitors have different language preferences.
+    #If LocaleMiddleware is being used, request.LANGUAGE_CODE is set. We will allow
+    #the LANGUAGE_CODE to override settings.RPX_LANGUAGE_PREFERENCE. However, since
+    #django's LANGUAGE_CODE does not map cleanly to RPX's language preference, we
+    #make a best attempt through helpers.django_lang_code_to_rpx_lang_preference.
+    #If neither request.LANGUAGE_CODE nor settings.RPX_LANGUAGE_PREFERENCE is set, 
+    #we will default to settings.LANGUAGE_CODE (which is usually 'en-us').
     try:
-        language_preference = request.RPX_LANGUAGE_PREFERENCE
+        language_preference = django_lang_code_to_rpx_lang_preference(request.LANGUAGE_CODE)
     except AttributeError:
-        language_preference = getattr(settings, 'RPX_LANGUAGE_PREFERENCE', 'en')
-
+        #If settings.RPX_LANGUAGE_PREFERENCE isn't set, then we will use
+        #settings.LANGUAGE_CODE
+        language_preference = getattr(settings, 'RPX_LANGUAGE_PREFERENCE', 
+                                      django_lang_code_to_rpx_lang_preference(settings.LANGUAGE_CODE))
+    print language_preference
     return {
         'realm': settings.RPXNOW_REALM,
         'token_url': token_url,

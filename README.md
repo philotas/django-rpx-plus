@@ -141,13 +141,18 @@ Tips
     to override some of the provided django-rpx-plus views (such as login). If you
     have any ideas on how to improve handling of `extra`, please let me know.
 
-*   For localization, django-rpx-plus will first look at request.LANGUAGE_CODE to
+*   For localization, django-rpx-plus will first look at `request.LANGUAGE_CODE` to
     try to map that to a RPX language_preference setting. Otherwise,
-    settings.RPX_LANGUAGE_PREFERENCE is read for the language_preference setting.
-    If that is not set, then settings.LANGUAGE_CODE will be used (defaults to 
+    `settings.RPX_LANGUAGE_PREFERENCE` is read for the language_preference setting.
+    If that is not set, then `settings.LANGUAGE_CODEq will be used (defaults to 
     'en-us'). Note that django's LANGUAGE_CODE is run through
-    helpers.django_lang_code_to_rpx_lang_preference to provide a mapping to 
+    `helpers.django_lang_code_to_rpx_lang_preference` to provide a mapping to 
     RPX's non-standard compliant language_preference.
+
+*   If you have a weird Facebook login issue (ie. getting the error message
+    "There was an error in signing you in. Try again?"). Try disabling 
+    "New Data Permissions" in your Facebook application. For more information, see
+    http://groups.google.com/group/rpx-developers/browse_thread/thread/1df4d30ed49b726b/34d2b0b71eed68d6
 
 
 Authors

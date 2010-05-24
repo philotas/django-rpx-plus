@@ -23,7 +23,16 @@ class RpxData(models.Model):
     profile = PickledObjectField()
     accessCredentials = PickledObjectField()
     merged_poco = PickledObjectField()
-
+    friends = PickledObjectField()
+     
+    def get_friends(self):
+        if 'Facebook' == self.provider:
+            # searching for friends from friends
+            #for friend in
+            friends = (self.user,)
+            return friends
+        return None
+    
     def __unicode__(self):
         return u"RPX identifier is %s" % self.identifier
         

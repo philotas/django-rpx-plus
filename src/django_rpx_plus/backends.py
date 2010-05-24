@@ -89,20 +89,19 @@ class RpxBackend:
         #check extended data availitity
         has_merged_poco = False
         has_accessCredentials = False
+        has_friends = False
         rpx_merged_poco = None
-        rpx_accessCredentials = None 
+        rpx_accessCredentials = None
+        rpx_friends = None 
         if response['merged_poco']:
             has_merged_poco = True
             rpx_merged_poco = response['merged_poco']
-            print "got merged_poco"
-        else:
-            print "no merged_poco"
         if response['accessCredentials']: 
             has_accessCredentials = True
             rpx_accessCredentials = response['accessCredentials']
-            print "got accessCredentials"
-        else:
-            print "no accessCredentials"
+        if response['friends']: 
+            has_friends = True
+            rpx_friends = response['friends']
         
         #See if this RPX identifier already exists in our RpxData database. 
         try:
@@ -117,6 +116,7 @@ class RpxBackend:
                 rd.profile = rpx_profile
                 rd.merged_poco = rpx_merged_poco
                 rd.accessCredentials = rpx_accessCredentials
+                rd.friends = rpx_friends
                 rd.save()
                 return rd
         except RpxData.DoesNotExist:
@@ -129,6 +129,7 @@ class RpxBackend:
             rd.profile = rpx_profile
             rd.merged_poco = rpx_merged_poco
             rd.accessCredentials = rpx_accessCredentials
+            rd.friends = rpx_friends
             rd.save()
             
             #We return the RpxData object so that the view can handle
@@ -142,6 +143,6 @@ class RpxBackend:
         rd.profile = rpx_profile
         rd.merged_poco = rpx_merged_poco
         rd.accessCredentials = rpx_accessCredentials
+        rd.friends = rpx_friends
         rd.save()
-
         return rd.user

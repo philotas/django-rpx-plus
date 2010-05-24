@@ -41,7 +41,13 @@ class RpxBackend:
             'format': 'json',
             'apiKey': settings.RPXNOW_API_KEY,
             'token': token, #only valid for 10 min
+            'extended' : getattr(settings, 'RPXNOW_EXTENDED', 'false'),
         }
+        
+        extended_data = False
+        if 'true' in getattr(settings, 'RPXNOW_EXTENDED', 'false'):
+            extended_data = True
+        
         #Send and get data from RPX API:
         try:
             response = urllib2.urlopen(url = RPX_API_AUTH_URL, data = urlencode(args))
@@ -80,6 +86,24 @@ class RpxBackend:
         rpx_identifier = rpx_profile['identifier'] #An OpenID URL
         rpx_provider = rpx_profile['providerName']
         
+        #check extended data availitity
+        has_merged_poco = False
+        has_accessCredentials = False
+        rpx_merged_poco = None
+        rpx_accessCredentials = None 
+        if response['merged_poco']:
+            has_merged_poco = True
+            rpx_merged_poco = response['merged_poco']
+            print "got merged_poco"
+        else:
+            print "no merged_poco"
+        if response['accessCredentials']: 
+            has_accessCredentials = True
+            rpx_accessCredentials = response['accessCredentials']
+            print "got accessCredentials"
+        else:
+            print "no accessCredentials"
+        
         #See if this RPX identifier already exists in our RpxData database. 
         try:
             rd = RpxData.objects.get(identifier = rpx_identifier)
@@ -91,6 +115,8 @@ class RpxBackend:
                 #return the RpxData object so that view can handle 
                 #registration.
                 rd.profile = rpx_profile
+                rd.merged_poco = rpx_merged_poco
+                rd.accessCredentials = rpx_accessCredentials
                 rd.save()
                 return rd
         except RpxData.DoesNotExist:
@@ -101,6 +127,8 @@ class RpxBackend:
             rd.identifier = rpx_identifier
             rd.provider = rpx_provider
             rd.profile = rpx_profile
+            rd.merged_poco = rpx_merged_poco
+            rd.accessCredentials = rpx_accessCredentials
             rd.save()
             
             #We return the RpxData object so that the view can handle
@@ -112,6 +140,8 @@ class RpxBackend:
         #to the RpxData object). So we refresh the user's profile with
         #data from RPX, then return the User object.
         rd.profile = rpx_profile
+        rd.merged_poco = rpx_merged_poco
+        rd.accessCredentials = rpx_accessCredentials
         rd.save()
 
         return rd.user

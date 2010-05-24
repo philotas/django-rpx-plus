@@ -21,6 +21,8 @@ class RpxData(models.Model):
     #not all of them are guaranteed. So it's messy to create a table for each of
     #the fields, especially since we will rarely access this data anyway.
     profile = PickledObjectField()
+    accessCredentials = PickledObjectField()
+    merged_poco = PickledObjectField()
 
     def __unicode__(self):
         return u"RPX identifier is %s" % self.identifier

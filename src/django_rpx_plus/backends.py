@@ -93,13 +93,13 @@ class RpxBackend:
         rpx_merged_poco = None
         rpx_accessCredentials = None
         rpx_friends = None 
-        if response['merged_poco']:
+        if 'merged_poco' in response: 
             has_merged_poco = True
             rpx_merged_poco = response['merged_poco']
-        if response['accessCredentials']: 
+        if 'accessCredentials' in response: 
             has_accessCredentials = True
             rpx_accessCredentials = response['accessCredentials']
-        if response['friends']: 
+        if 'friends' in response: 
             has_friends = True
             rpx_friends = response['friends']
         

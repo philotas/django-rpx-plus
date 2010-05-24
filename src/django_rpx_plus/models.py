@@ -21,9 +21,9 @@ class RpxData(models.Model):
     #not all of them are guaranteed. So it's messy to create a table for each of
     #the fields, especially since we will rarely access this data anyway.
     profile = PickledObjectField()
-    accessCredentials = PickledObjectField()
-    merged_poco = PickledObjectField()
-    friends = PickledObjectField()
+    accessCredentials = PickledObjectField(null=True)
+    merged_poco = PickledObjectField(null=True)
+    friends = PickledObjectField(null=True)
      
     def get_friends(self):
         if 'Facebook' == self.provider:

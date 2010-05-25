@@ -70,7 +70,6 @@ def rpx_response(request):
             if type(response) == User:
                 #Successful auth and user is registered so we login user.
                 auth.login(request, response)
-                print user.get_friends()
                 return redirect(destination)
             elif type(response) == RpxData:
                 #Successful auth, but user is NOT registered! So we redirect
@@ -189,6 +188,7 @@ def register(request):
             u = User()
             u.username = data['username']
             u.email = data['email']
+            u.set_unusable_password()
             u.save()
 
             rd.user = u
